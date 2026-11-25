@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portofolio & Rekam Jejak Industri | PT. Candi Oxygen</title>
+  <meta name="description" content="Rekam jejak dan galeri proyek pasokan gas industri, gas medis, filling station Safe N Lock, dan instalasi sistem pemipaan gas oleh PT. Candi Oxygen sejak tahun 1980.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#0F172A',
+              900: '#0A192F',
+              850: '#0a162b',
+              800: '#0f203d',
+              700: '#17335d',
+              600: '#1f467e',
+              500: '#2b5f9e',
+            },
+            oxygen: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          },
+          fontFamily: {
+            serif: ['Montserrat', 'sans-serif'],
+            sans: ['Roboto', 'sans-serif'],
+            heading: ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body data-page="portfolio" class="bg-white text-navy-900 selection:bg-sky-500 selection:text-white antialiased">
+
+
+  <!-- =========================================================================
+       LUXURY NAVIGATION BAR (HEADER UNIFIKASI DENGAN SEARCH & LANGUAGE SWITCHER)
+       ========================================================================= -->
+  <header id="main-header" class="sticky top-0 z-50 w-full transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-200/90">
+  <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between xl:justify-center">
+    
+    <!-- Desktop Centered Navigation Bar (Exact Sequential Order) -->
+    <div class="hidden xl:flex items-center justify-center gap-x-3 2xl:gap-x-5 w-full">
+      
+      <!-- 1. Logo & Candi Oxygen Brand Title -->
+      <a href="index.html" class="flex items-center gap-2.5 shrink-0 group mr-1">
+        <img src="assets/images/logo.png" alt="PT. Candi Oxygen Logo" class="w-9 h-9 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
+        <span class="font-candi-title text-base lg:text-lg text-navy-900 group-hover:text-sky-600 transition-colors uppercase tracking-[0.16em]">
+          CANDI OXYGEN
+        </span>
+      </a>
+
+      <!-- 2. Menu Links dengan Class Animasi Omega Yang Sama -->
+      <a href="index.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_home">Beranda</a>
+      <a href="about.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_about">Tentang Kami</a>
+      <a href="products.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_products">Produk & Layanan</a>
+      <a href="portfolio.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_portfolio">Portofolio</a>
+      <a href="gallery.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_gallery">Galeri</a>
+      <a href="career.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_career">Karir</a>
+      <a href="contact.html" class="nav-omega-link shrink-0 text-xs font-semibold tracking-wider" data-i18n="nav_contact">Kontak & Lokasi</a>
+
+      <!-- 3. Search Bar -->
+      <div class="header-search-wrap relative shrink-0">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+        <input type="text" 
+               class="header-search-input !w-36 2xl:!w-44 focus:!w-52 text-xs !py-1.5 !pl-8 !pr-3" 
+               placeholder="Cari gas, layanan..." 
+               data-i18n-placeholder="search_placeholder"
+               autocomplete="off">
+        <div class="header-search-suggestions"></div>
+      </div>
+
+      <!-- 4. Language Switcher Pill -->
+      <div class="lang-switcher-pill shrink-0" title="Pilih Bahasa / Choose Language">
+        <button type="button" class="lang-btn active" data-lang="id" title="Bahasa Indonesia">
+          <span>ID</span>
+        </button>
+        <button type="button" class="lang-btn" data-lang="en" title="English">
+          <span>EN</span>
+        </button>
+      </div>
+
+      <!-- 5. Request Quote CTA Button -->
+      <a href="quote.html" class="btn-rolex-pill-dark shrink-0 px-4 py-2 text-[11px] font-semibold tracking-wider uppercase rounded-full shadow-sm ml-1" data-i18n="btn_quote">
+        <span>Ajukan Penawaran</span>
+      </a>
+
+    </div>
+
+    <!-- Mobile & Tablet Navbar (< xl) -->
+    <div class="flex xl:hidden items-center justify-between w-full">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <img src="assets/images/logo.png" alt="PT. Candi Oxygen Logo" class="w-8 h-8 object-contain">
+        <span class="font-candi-title text-base text-navy-900 uppercase tracking-[0.14em]">CANDI OXYGEN</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <div class="lang-switcher-pill scale-90">
+          <button type="button" class="lang-btn active" data-lang="id"><span>ID</span></button>
+          <button type="button" class="lang-btn" data-lang="en"><span>EN</span></button>
+        </div>
+        <button id="mobile-menu-toggle" type="button" class="p-2 text-navy-900 hover:text-sky-600 focus:outline-none" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-menu" class="fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm hidden transition-opacity duration-300">
+    <div class="mobile-drawer-content fixed left-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-2xl p-6 sm:p-8 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <img src="assets/images/logo.png" alt="Logo" class="w-9 h-9 object-contain">
+            <span class="font-candi-title text-base sm:text-lg uppercase text-navy-900">CANDI OXYGEN</span>
+          </div>
+          <button id="mobile-menu-close" class="p-2 text-slate-400 hover:text-navy-900" aria-label="Tutup">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="mt-6 header-search-wrap relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+          <input type="text" 
+                 class="header-search-input !w-full !py-2.5 !pl-9" 
+                 placeholder="Cari produk gas, layanan, alat..." 
+                 data-i18n-placeholder="search_placeholder"
+                 autocomplete="off">
+          <div class="header-search-suggestions !w-full !left-0"></div>
+        </div>
+
+        <nav class="mt-6 flex flex-col space-y-3">
+          <a href="index.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_home">Beranda</a>
+          <a href="about.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_about">Tentang Kami</a>
+          <a href="products.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_products">Produk & Layanan</a>
+          <a href="portfolio.html" class="text-xs font-bold uppercase tracking-widest text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_portfolio">Portofolio</a>
+          <a href="gallery.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_gallery">Galeri</a>
+          <a href="career.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_career">Karir</a>
+          <a href="contact.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_contact">Kontak & Lokasi</a>
+          <a href="quote.html" class="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-sky-600 py-2 border-b border-slate-100" data-i18n="nav_quote">Ajukan Penawaran (RFQ)</a>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-slate-200 space-y-3">
+        <a href="quote.html" class="w-full text-center block py-3 bg-navy-900 text-white font-medium text-xs tracking-[0.2em] uppercase rounded-full shadow-md" data-i18n="btn_quote">
+          Ajukan Penawaran
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PAGE HERO (ROLEX ARCHITECTURAL PRESTIGE WITH SCROLL FADE HEADING)
+       ========================================================================= -->
+  <section class="bg-navy-950 text-white py-24 sm:py-28 relative overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=2000&q=80" 
+           alt="Rekam Jejak Proyek PT Candi Oxygen" 
+           class="w-full h-full object-cover opacity-90 filter contrast-125">
+      <div class="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/90 to-navy-900/70"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2">
+        <span class="h-px w-8 bg-sky-400"></span>
+        <span class="text-xs uppercase tracking-[0.3em] text-sky-400 font-bold" data-i18n="portfolio_tag">Rekam Jejak Kepercayaan Sejak 1980</span>
+        <span class="h-px w-8 bg-sky-400"></span>
+      </div>
+      <h1 class="scroll-fade-heading font-luxury-serif text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-white" data-i18n="portfolio_title">
+        Portofolio Proyek & Kerjasama Industri
+      </h1>
+      <p class="scroll-fade-heading text-slate-300 max-w-2xl mx-auto text-sm sm:text-base font-light leading-relaxed" data-i18n="portfolio_desc">
+        Dokumentasi instalasi gas piping system, pasokan gas murni, filling station di Safe N Lock Sidoarjo, serta kemitraan rumah sakit dan manufaktur di seluruh Jawa Timur.
+      </p>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       EXCLUSIVE FILTER TABS
+       ========================================================================= -->
+  <section class="py-6 bg-slate-50 border-b border-slate-200 sticky top-20 z-30 backdrop-blur-md bg-slate-50/95">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8">
+      <div class="flex items-center justify-center flex-wrap gap-2 sm:gap-3">
+        <button class="portfolio-filter-btn px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-[0.16em] transition-all bg-navy-900 text-white shadow-luxury-sm" data-filter="all" data-i18n="portfolio_filter_all">
+          Semua Proyek
+        </button>
+        <button class="portfolio-filter-btn px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-[0.16em] transition-all bg-white text-navy-900 border border-slate-200 hover:border-navy-900" data-filter="medis" data-i18n="portfolio_filter_medis">
+          Medis & Rumah Sakit
+        </button>
+        <button class="portfolio-filter-btn px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-[0.16em] transition-all bg-white text-navy-900 border border-slate-200 hover:border-navy-900" data-filter="kriogenik" data-i18n="portfolio_filter_kriogenik">
+          Filling Station & Dewars
+        </button>
+        <button class="portfolio-filter-btn px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-[0.16em] transition-all bg-white text-navy-900 border border-slate-200 hover:border-navy-900" data-filter="industri" data-i18n="portfolio_filter_industri">
+          Industri & Fabrikasi Baja
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       PORTFOLIO GRID
+       ========================================================================= -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8">
+      
+      <div id="portfolio-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Project 1: Medical Gas -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="medis">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80" 
+                 alt="Instalasi Gas Medis RS Surabaya - Sidoarjo" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-navy-900 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              INSTALASI MEDIS
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Surabaya & Sidoarjo</span>
+              <span class="font-mono text-emerald-600 font-semibold">Aktif Beroperasi</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Pemasangan Gas Piping System & Suplai Oksigen Medis
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Instalasi pipa tembaga seamless degreased, manifold changeover otomatis, serta pengiriman rutin tabung 6 m³ untuk fasilitas rawat inap, ICU, dan instalasi gawat darurat.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Layanan: Piping & Delivery</span>
+              <span class="text-emerald-600 font-bold">100% On-Time</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2: Filling Station Safe N Lock -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="kriogenik">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" 
+                 alt="Modernisasi Stasiun Pengisian Filling Station Safe N Lock Sidoarjo" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-sky-600 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              SAFE N LOCK SIDOARJO
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Kawasan Safe N Lock Blok K</span>
+              <span class="font-mono text-sky-600 font-semibold">Stasiun Pengisian Utama</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Filling Station Modern Berstandar K3
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Fasilitas stasiun pengisian otomatis modern milik PT. Candi Oxygen di Sidoarjo yang melayani pengisian O2, N2, Argon, CO2, serta perawatan tabung berstandar K3.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Fasilitas: Filling Station</span>
+              <span class="text-sky-600 font-bold">Auto-Vacuum</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3: Industrial Fabrication & Steel Construction -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="industri">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80" 
+                 alt="Fabrikasi Baja dan Pengelasan Presisi Gresik & Pasuruan" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-navy-950 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              INDUSTRI & GALANGAN
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Kawasan Industri Gresik & Pasuruan</span>
+              <span class="font-mono text-sky-600 font-semibold">Pasokan Kontrak</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Suplai Argon, Mixed Gases & Purging Nitrogen Galangan
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Penyediaan pasokan gas Argon High Purity dan Gas Campuran dalam paket rak cradle silinder 16 tabung serta layanan purging pipelines Nitrogen untuk proyek galangan & pabrik baja.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Produk: Argon, Mixed, Purging</span>
+              <span class="text-sky-600 font-bold">Cradle System</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4: Food & Beverage Flash Freezing -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="industri">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80" 
+                 alt="Nitrogen Liquid Pembekuan Cepat Makanan Mojokerto" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-navy-900 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              FOOD & BEVERAGE
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Mojokerto & Malang</span>
+              <span class="font-mono text-emerald-600 font-semibold">Food Grade</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Penyediaan Liquid Nitrogen & CO2 Pembekuan Makanan
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Pasokan teratur Nitrogen Cair dalam tabung cryogenic dewar serta gas CO2 food grade untuk industri pengemasan makanan beku, minuman berkarbonasi, dan modified atmosphere packaging.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Format: Cryogenic Dewars</span>
+              <span class="text-emerald-600 font-bold">Higienis & Bersertifikat</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 5: Medical Clinic & Homecare Delivery -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="medis">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80" 
+                 alt="Pasokan Oksigen Rumah Sakit & Homecare Jawa Timur" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-sky-600 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              HOMECARE & KLINIK
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Jawa Timur Raya</span>
+              <span class="font-mono text-emerald-600 font-semibold">Respon Tanggap</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Armada Pengiriman Oksigen Medis Homecare & Regulator
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Layanan cepat tanggap antar tabung oksigen medis 1 m³ dan 6 m³ lengkap dengan regulator medis berstandar, trolley silinder, dan pengujian kebocoran untuk pemulihan pasien di rumah.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Layanan: Homecare Delivery</span>
+              <span class="text-emerald-600 font-bold">Siap Kirim</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 6: Pipe Maintenance & Purging Service -->
+        <div class="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="kriogenik">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80" 
+                 alt="Purging Pipelines with Nitrogen di Pabrik Petrokimia" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute top-4 left-4 bg-navy-950 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm">
+              PURGING PIPELINE
+            </div>
+          </div>
+          <div class="p-8 space-y-4">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Zona Industri Petrokimia</span>
+              <span class="font-mono text-sky-600 font-semibold">Sertifikasi Migas/K3</span>
+            </div>
+            <h3 class="font-luxury-serif text-xl font-bold text-navy-900 group-hover:text-sky-600 transition-colors">
+              Pembersihan & Inerting Jaringan Pipa dengan Nitrogen Kering
+            </h3>
+            <p class="text-slate-600 text-xs leading-relaxed">
+              Jasa pengurasan pipa (purging) menggunakan gas Nitrogen bertekanan tinggi untuk menghilangkan uap hidrokarbon, kelembaban, dan oksigen sebelum proses re-commissioning pabrik kimia.
+            </p>
+            <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+              <span>Teknologi: High Pressure N2</span>
+              <span class="text-sky-600 font-bold">Zero Spark Risk</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       CTA SECTION
+       ========================================================================= -->
+  <section class="py-20 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-6 text-center space-y-6">
+      <span class="text-xs uppercase tracking-[0.3em] text-sky-600 font-bold font-mono" data-i18n="cta_tag">MULAI KOLABORASI INDUSTRI</span>
+      <h2 class="scroll-fade-heading font-luxury-serif text-3xl sm:text-4xl font-light text-navy-900" data-i18n="cta_title">
+        Siap Membangun Kemitraan Pasokan Gas Berkelanjutan?
+      </h2>
+      <p class="text-slate-600 text-sm max-w-2xl mx-auto leading-relaxed" data-i18n="cta_desc">
+        Diskusikan kebutuhan volume gas berkala, instalasi sistem sentral, atau sewa peralatan bersama tim ahli PT. Candi Oxygen untuk penawaran kompetitif.
+      </p>
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="quote.html" class="btn-rolex-pill-dark px-8 py-3.5 text-xs font-semibold tracking-[0.16em] uppercase rounded-full shadow-luxury-md" data-i18n="cta_btn_quote">
+          Ajukan Penawaran Resmi
+        </a>
+        <a href="contact.html" class="btn-rolex-pill-light px-8 py-3.5 text-xs font-semibold tracking-[0.16em] uppercase rounded-full border border-slate-300" data-i18n="cta_btn_contact">
+          Hubungi Tim Kami
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       LUXURY FOOTER (WITH OFFICIAL SOCIAL MEDIA & PHONE LINKS)
+       ========================================================================= -->
+  <footer class="bg-navy-950 text-white pt-20 pb-12 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
+        
+        <!-- Col 1: Brand & Profile Statement (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <img src="assets/images/logo.png" alt="PT. Candi Oxygen Logo" class="w-10 h-10 object-contain drop-shadow-sm">
+            <span class="font-candi-title text-xl text-white tracking-[0.16em] uppercase">
+              CANDI OXYGEN
+            </span>
+          </a>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Industri yang bergerak di bidang Supplier Gas. Selama bertahun-tahun, PT. Candi Oxygen telah membangun reputasi dan kepercayaan kepada setiap pelanggan dengan memberikan layanan dan produk yang berkualitas tinggi ke industri bisnis dan ke rumah Anda sejak tahun 1980.
+          </p>
+          <div class="text-xs text-slate-400 space-y-1">
+            <p><strong class="text-white" data-i18n="footer_address_title">Alamat:</strong></p>
+            <p><span class="text-slate-200 font-semibold">PT. Candi Oxygen Gases:</span> <span>Pergudangan & Industri "Safe N Lock" Blok K No. 1726-1729, Jl. Lingkar Timur KM 5.5, Ds. Rangkah Kidul, Sidoarjo, Jawa Timur 61232</span></p>
+            <p><span class="text-slate-200 font-semibold">PT. Candi Sukses Abadi:</span> <span>Jl. Bypass Krian, Semawut, Balongbendo, Kec. Balongbendo, Kabupaten Sidoarjo, Jawa Timur 61263</span></p>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation (2 cols) -->
+        <div class="lg:col-span-2 space-y-4">
+          <h4 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-300 font-luxury-serif" data-i18n="footer_nav">Navigasi</h4>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li><a href="index.html" class="hover:text-white transition-colors" data-i18n="nav_home">Beranda</a></li>
+            <li><a href="about.html" class="hover:text-white transition-colors" data-i18n="nav_about">Tentang Kami</a></li>
+            <li><a href="products.html" class="hover:text-white transition-colors" data-i18n="nav_products">Produk & Layanan</a></li>
+            <li><a href="portfolio.html" class="hover:text-white transition-colors" data-i18n="nav_portfolio">Portofolio</a></li>
+            <li><a href="gallery.html" class="hover:text-white transition-colors" data-i18n="nav_gallery">Galeri</a></li>
+            <li><a href="career.html" class="hover:text-white transition-colors" data-i18n="nav_career">Karir</a></li>
+            <li><a href="contact.html" class="hover:text-white transition-colors" data-i18n="nav_contact">Kontak & Lokasi</a></li>
+            <li><a href="quote.html" class="hover:text-white transition-colors" data-i18n="nav_quote">Ajukan Penawaran</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Produk & Servis (3 cols) -->
+        <div class="lg:col-span-3 space-y-4">
+          <h4 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-300 font-luxury-serif" data-i18n="footer_lines">Lini Utama</h4>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li><a href="products.html" class="hover:text-white transition-colors">Industrial & Medical Gases</a></li>
+            <li><a href="products.html" class="hover:text-white transition-colors">Filling Station & Delivery Service</a></li>
+            <li><a href="products.html" class="hover:text-white transition-colors">Gas Piping System & Purging</a></li>
+            <li><a href="products.html" class="hover:text-white transition-colors">Spare Parts & Maintenance</a></li>
+            <li><a href="products.html" class="hover:text-white transition-colors">Cylinder, Dewars, Valve & Regulator</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Sosial Media Resmi & Kontak Telepon (3 cols) -->
+        <div class="lg:col-span-3 space-y-4">
+          <h4 class="text-xs font-bold uppercase tracking-[0.25em] text-sky-300 font-luxury-serif" data-i18n="footer_contact">Hubungi & Ikuti Kami</h4>
+          
+          <div class="space-y-2.5 text-xs text-slate-300">
+            <p>
+              <i class="fa-solid fa-phone text-sky-400 mr-2 w-4"></i>
+              <a href="tel:+623199010315" class="hover:text-white">(031) 990103 15 / 16</a>
+            </p>
+            <p>
+              <i class="fa-brands fa-whatsapp text-emerald-400 mr-2 w-4"></i>
+              <a href="https://wa.me/628113739800" target="_blank" rel="noopener noreferrer" class="hover:text-white">+62 811-3739-800</a>
+            </p>
+            <p>
+              <i class="fa-solid fa-envelope text-sky-400 mr-2 w-4"></i>
+              <a href="mailto:cdosidoarjo@gmail.com" class="hover:text-white">cdosidoarjo@gmail.com</a>
+            </p>
+          </div>
+
+          <!-- Social Media Icons (Clickable directly to channels) -->
+          <div class="pt-2">
+            <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-2 font-medium" data-i18n="footer_social_title">Akun Media Sosial Resmi:</span>
+            <div class="flex items-center gap-3">
+              <!-- Instagram -->
+              <a href="https://www.instagram.com/candioxygengases" target="_blank" rel="noopener noreferrer" 
+                 class="w-9 h-9 rounded-full bg-white/10 hover:bg-gradient-to-tr hover:from-amber-500 hover:to-purple-600 text-white flex items-center justify-center transition-all duration-300 group"
+                 title="Instagram @candioxygengases">
+                <i class="fa-brands fa-instagram text-sm"></i>
+              </a>
+
+              <!-- TikTok -->
+              <a href="https://www.tiktok.com/@candioxygengases" target="_blank" rel="noopener noreferrer" 
+                 class="w-9 h-9 rounded-full bg-white/10 hover:bg-black text-white flex items-center justify-center transition-all duration-300 group"
+                 title="TikTok @candioxygengases">
+                <i class="fa-brands fa-tiktok text-sm"></i>
+              </a>
+
+              <!-- LinkedIn -->
+              <a href="https://www.linkedin.com/company/pt-candi-oxygen-gases" target="_blank" rel="noopener noreferrer" 
+                 class="w-9 h-9 rounded-full bg-white/10 hover:bg-[#0A66C2] text-white flex items-center justify-center transition-all duration-300 group"
+                 title="LinkedIn PT. Candi Oxygen">
+                <i class="fa-brands fa-linkedin-in text-sm"></i>
+              </a>
+
+              <!-- WhatsApp Direct -->
+
+              <a href="https://wa.me/628113739800" target="_blank" rel="noopener noreferrer" 
+                 class="w-9 h-9 rounded-full bg-white/10 hover:bg-emerald-600 text-white flex items-center justify-center transition-all duration-300 group"
+                 title="WhatsApp +62 811-3739-800">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div data-i18n="footer_rights">
+          © 2026 PT. Candi Oxygen. Seluruh Hak Cipta Dilindungi Undang-Undang.
+        </div>
+        <div class="flex items-center space-x-6 text-[11px]">
+          <a href="#" class="hover:text-slate-400 transition-colors" data-i18n="footer_privacy">Kebijakan Privasi</a>
+          <a href="#" class="hover:text-slate-400 transition-colors" data-i18n="footer_terms">Ketentuan Layanan</a>
+          <a href="#" class="hover:text-slate-400 transition-colors" data-i18n="footer_safety">Sertifikasi & K3</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/cms.js"></script>
+</body>
+</html>

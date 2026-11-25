@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin PT. Candi Oxygen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <style>
+    body { background:#f1f5f9; }
+    .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:600; transition:.15s; cursor:pointer; }
+    .btn-primary { background:#0c4a6e; color:#fff; } .btn-primary:hover { background:#075985; }
+    .btn-ghost { background:#fff; border:1px solid #cbd5e1; color:#0f172a; } .btn-ghost:hover { background:#f8fafc; }
+    .btn-danger { background:#fff; border:1px solid #fecaca; color:#b91c1c; } .btn-danger:hover { background:#fef2f2; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .inp { width:100%; border:1px solid #cbd5e1; border-radius:.5rem; padding:.5rem .7rem; font-size:.85rem; background:#fff; }
+    .inp:focus { outline:2px solid #38bdf8; border-color:#38bdf8; }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:.75rem; }
+    .lbl { display:block; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#475569; margin-bottom:.25rem; }
+    .tab-btn { display:flex; align-items:center; gap:.7rem; padding:.65rem .9rem; border-radius:.5rem; font-size:.85rem; font-weight:600; color:#cbd5e1; width:100%; text-align:left; }
+    .tab-btn:hover { background:rgba(255,255,255,.08); } .tab-btn.active { background:#0284c7; color:#fff; }
+    .hidden-tab { display:none; }
+    .toast { position:fixed; bottom:1.2rem; left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; padding:.7rem 1.1rem; border-radius:.6rem; font-size:.85rem; z-index:100; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+    .toast.err { background:#b91c1c; }
+    .bar { height:.6rem; border-radius:999px; background:#e2e8f0; overflow:hidden; } .bar > i { display:block; height:100%; border-radius:999px; }
+    textarea.inp { resize:vertical; }
+    @media (max-width: 1023px) { #editor-wrap { flex-direction:column; } #editor-panel { width:100% !important; } }
+  </style>
+</head>
+<body class="text-slate-800">
+
+<!-- ================= LOGIN ================= -->
+<div id="view-login" class="min-h-screen flex items-center justify-center p-6">
+  <div class="card p-8 w-full max-w-sm shadow-xl">
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 mx-auto rounded-full bg-sky-700 text-white flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-lock"></i></div>
+      <h1 class="text-xl font-bold text-slate-900">Admin PT. Candi Oxygen</h1>
+      <p class="text-xs text-slate-500 mt-1">Masuk untuk mengelola website</p>
+    </div>
+    <div id="setup-warning" class="hidden mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">
+      <b>Supabase belum diisi.</b> Buka <code>assets/js/supabase.js</code>, isi <code>SUPABASE_URL</code> dan <code>SUPABASE_ANON_KEY</code>. Ikuti <b>PANDUAN_ADMIN.md</b>.
+    </div>
+    <form id="login-form" class="space-y-4">
+      <div><label class="lbl">Email</label><input id="login-email" type="email" required class="inp" autocomplete="username"></div>
+      <div><label class="lbl">Kata sandi</label><input id="login-pass" type="password" required class="inp" autocomplete="current-password"></div>
+      <p id="login-err" class="hidden text-xs font-semibold text-red-600"></p>
+      <button class="btn btn-primary w-full justify-center" type="submit">Masuk</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= APLIKASI ================= -->
+<div id="view-app" class="hidden min-h-screen lg:flex">
+  <aside class="bg-slate-900 lg:w-60 lg:min-h-screen p-4 lg:fixed lg:inset-y-0 flex lg:block flex-wrap gap-1 items-center">
+    <div class="hidden lg:block px-2 pb-4 mb-3 border-b border-white/10">
+      <div class="text-white font-bold">PT. Candi Oxygen</div>
+      <div class="text-[11px] text-slate-400">Panel Admin</div>
+    </div>
+    <nav class="flex lg:block gap-1 flex-wrap flex-1 lg:space-y-1">
+      <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-line w-4"></i><span>Statistik</span></button>
+      <button class="tab-btn" data-tab="editor"><i class="fa-solid fa-pen-to-square w-4"></i><span>Edit Website</span></button>
+      <button class="tab-btn" data-tab="gallery"><i class="fa-solid fa-images w-4"></i><span>Galeri Gambar</span></button>
+      <button class="tab-btn" data-tab="quote"><i class="fa-solid fa-boxes-stacked w-4"></i><span>Form Penawaran</span></button>
+      <button class="tab-btn" data-tab="portfolio"><i class="fa-solid fa-layer-group w-4"></i><span>Portofolio</span></button>
+      <button class="tab-btn" data-tab="activity"><i class="fa-solid fa-camera-retro w-4"></i><span>Galeri Kegiatan</span></button>
+      <button class="tab-btn" data-tab="jobs"><i class="fa-solid fa-briefcase w-4"></i><span>Lowongan Karir</span></button>
+      <button class="tab-btn" data-tab="inbox"><i class="fa-solid fa-inbox w-4"></i><span>Pesan Masuk</span><b id="inbox-badge" class="hidden ml-auto text-[10px] bg-red-500 text-white rounded-full px-1.5 py-0.5"></b></button>
+      <button class="tab-btn" data-tab="links"><i class="fa-solid fa-link w-4"></i><span>Link Pelacak</span></button>
+      <button class="tab-btn" data-tab="help"><i class="fa-solid fa-circle-question w-4"></i><span>Bantuan</span></button>
+    </nav>
+    <div class="lg:absolute lg:bottom-4 lg:left-4 lg:right-4">
+      <div id="user-email" class="hidden lg:block text-[11px] text-slate-400 truncate mb-2"></div>
+      <button id="btn-logout" class="tab-btn !text-slate-300"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Keluar</span></button>
+    </div>
+  </aside>
+
+  <main class="flex-1 lg:ml-60 p-4 sm:p-6 min-w-0">
+
+    <!-- ============ STATISTIK ============ -->
+    <section id="tab-dashboard">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div><h2 class="text-xl font-bold text-slate-900">Statistik Pengunjung</h2><p class="text-xs text-slate-500">Dari mana pengunjung datang dan halaman apa yang mereka buka.</p></div>
+        <div class="flex gap-2">
+          <select id="range" class="inp !w-auto">
+            <option value="1">Hari ini</option><option value="7" selected>7 hari terakhir</option><option value="30">30 hari terakhir</option><option value="90">90 hari terakhir</option>
+          </select>
+          <button id="btn-refresh" class="btn btn-ghost"><i class="fa-solid fa-rotate"></i> Muat ulang</button>
+        </div>
+      </div>
+      <div id="dash-msg" class="hidden card p-4 text-sm text-slate-600 mb-4"></div>
+      <div id="kpis" class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4"></div>
+      <div class="card p-4 mb-4"><div class="flex items-center justify-between mb-2"><h3 class="font-bold text-sm">Kunjungan per hari</h3>
+        <div class="flex gap-3 text-[11px] text-slate-500"><span><i class="fa-solid fa-circle text-sky-600 text-[8px]"></i> Tampilan halaman</span><span><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> Pengunjung unik</span></div></div>
+        <div id="chart"></div></div>
+      <div class="grid lg:grid-cols-2 gap-4 mb-4">
+        <div class="card p-4"><h3 class="font-bold text-sm mb-3">Pengunjung datang dari (per sesi)</h3><div id="sources" class="space-y-3"></div></div>
+        <div class="card p-4"><h3 class="font-bold text-sm mb-3">Halaman terpopuler</h3><div id="pages" class="space-y-3"></div></div>
+      </div>
+      <div class="grid lg:grid-cols-3 gap-4 mb-4">
+        <div class="card p-4"><h3 class="font-bold text-sm mb-3">Jenis perangkat</h3><div id="devices" class="space-y-3"></div></div>
+        <div class="card p-4"><h3 class="font-bold text-sm mb-3">Bahasa</h3><div id="langs" class="space-y-3"></div></div>
+        <div class="card p-4"><h3 class="font-bold text-sm mb-3">Jenis sumber</h3><div id="mediums" class="space-y-3"></div></div>
+      </div>
+      <div class="card p-4 overflow-x-auto"><h3 class="font-bold text-sm mb-3">Kunjungan terbaru</h3><table class="w-full text-xs"><thead><tr class="text-left text-slate-500"><th class="py-1">Waktu</th><th>Halaman</th><th>Sumber</th><th>Perangkat</th></tr></thead><tbody id="recent"></tbody></table></div>
+    </section>
+
+    <!-- ============ EDITOR ============ -->
+    <section id="tab-editor" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div><h2 class="text-xl font-bold text-slate-900">Edit Website</h2><p class="text-xs text-slate-500">Klik teks, gambar, tombol, atau kartu di halaman di bawah, lalu ubah lewat panel di kanan.</p></div>
+        <div class="flex flex-wrap gap-2" id="page-tabs"></div>
+      </div>
+      <div id="file-warning" class="hidden mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800">Editor visual hanya berfungsi bila website sudah di-hosting (bukan dibuka dari file di komputer). Lihat PANDUAN_ADMIN.md bagian "Upload website".</div>
+      <div id="editor-wrap" class="flex gap-4 items-start">
+        <div class="flex-1 min-w-0 card overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 bg-slate-100 border-b border-slate-200 text-[11px] text-slate-500">
+            <i class="fa-solid fa-hand-pointer"></i> Mode edit aktif. Tombol dan link tidak akan berpindah halaman.
+            <span class="ml-auto flex gap-1"><button class="btn btn-ghost !py-1 !px-2" data-vw="100%">Desktop</button><button class="btn btn-ghost !py-1 !px-2" data-vw="420px">HP</button></span>
+          </div>
+          <div class="bg-slate-200 flex justify-center"><iframe id="frame" title="Pratinjau" class="bg-white" style="width:100%;height:78vh;border:0;transition:width .2s"></iframe></div>
+        </div>
+        <aside id="editor-panel" class="card p-4 w-[360px] shrink-0 lg:sticky lg:top-4 max-h-[88vh] overflow-y-auto">
+          <div id="panel-empty" class="text-sm text-slate-500 space-y-3">
+            <div class="font-bold text-slate-800"><i class="fa-solid fa-circle-info text-sky-600"></i> Cara pakai</div>
+            <ul class="list-disc pl-5 space-y-1.5 text-xs">
+              <li>Klik <b>teks</b> untuk mengubah kata-katanya (isi versi Indonesia dan English).</li>
+              <li>Klik <b>gambar</b> untuk mengganti foto.</li>
+              <li>Klik <b>tombol / link</b> untuk mengubah tujuannya (WhatsApp, Instagram, LinkedIn, dll).</li>
+              <li>Klik <b>kartu produk / proyek</b> lalu pilih Duplikat atau Sembunyikan.</li>
+              <li>Kartu dengan garis hijau adalah kartu tambahan buatan Anda.</li>
+              <li>Perubahan langsung tersimpan dan tampil di website.</li>
+            </ul>
+          </div>
+          <div id="panel-body" class="hidden space-y-5"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ FORM PENAWARAN ============ -->
+    <section id="tab-quote" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Produk di Form Penawaran</h2><p class="text-xs text-slate-500">Atur produk, ukuran, dan sub pilihan (misal WG / HP / UHP) yang bisa dipesan pengunjung.</p></div>
+        <div class="flex gap-2"><button id="q-add" class="btn btn-ghost"><i class="fa-solid fa-plus"></i> Produk baru</button><button id="q-save" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan semua</button></div>
+      </div>
+      <div class="card p-4 mb-4 text-xs text-slate-600 space-y-1">
+        <p><b>Format baris:</b> tulis satu pilihan per baris. Contoh: <code>Tabung 6m³</code>. Jika tulisan di dropdown ingin berbeda dengan nilai yang dikirim: <code>nilai | tulisan</code>, contoh <code>HP | HP (High Purity)</code>.</p>
+        <p>Pilihan <b>Kustom</b> otomatis selalu ada di akhir daftar ukuran. Kosongkan daftar ukuran jika produk hanya boleh Kustom.</p>
+      </div>
+      <div id="q-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ============ LOWONGAN KARIR ============ -->
+    <section id="tab-jobs" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Lowongan Karir</h2><p class="text-xs text-slate-500">Tambah, ubah, sembunyikan, atau hapus lowongan. Halaman Karir di website langsung mengikuti daftar ini.</p></div>
+        <button id="job-add" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah lowongan</button>
+      </div>
+      <div id="job-banner" class="mb-4"></div>
+      <div id="job-list" class="space-y-3"></div>
+    </section>
+
+
+    <!-- ============ GALERI GAMBAR ============ -->
+    <section id="tab-gallery" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Galeri Gambar</h2><p class="text-xs text-slate-500">Semua gambar di website, dikumpulkan dari seluruh halaman. Klik <b>Ganti</b> lalu pilih foto dari komputer. Foto otomatis dikecilkan, dan langsung tampil di website tanpa Commit / Push.</p></div>
+        <button id="gl-refresh" class="btn btn-ghost"><i class="fa-solid fa-rotate"></i> Muat ulang</button>
+      </div>
+      <div class="card p-3 mb-4 flex flex-wrap items-center gap-3">
+        <div id="gl-pages" class="flex flex-wrap gap-1.5 flex-1 min-w-[200px]"></div>
+        <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer"><input type="checkbox" id="gl-changed"> Hanya yang sudah diganti</label>
+      </div>
+      <div id="gl-note" class="mb-4"></div>
+      <div id="gl-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+      <input type="file" id="gl-file" accept="image/*" class="hidden">
+    </section>
+
+    <!-- ============ PORTOFOLIO ============ -->
+    <section id="tab-portfolio" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Portofolio Proyek</h2><p class="text-xs text-slate-500">Tambah, ubah, sembunyikan, atau hapus proyek. Halaman Portofolio di website langsung mengikuti daftar ini.</p></div>
+        <button id="pf-add" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah proyek</button>
+      </div>
+      <div class="card p-4 mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2"><div><div class="text-sm font-bold text-slate-900">Tombol filter halaman Portofolio</div><div class="text-[11px] text-slate-500">Kelompok bawaan tidak bisa dihapus. Tambahkan kelompok baru di sini, lalu pilih saat menambah/mengedit proyek. Filter tambahan tampil setelah halaman Portofolio diatur dari admin.</div></div></div>
+        <div id="pf-filters" class="flex flex-wrap gap-2 mb-3"></div>
+        <div class="grid sm:grid-cols-[1fr_1fr_auto] gap-2 items-end">
+          <div><label class="lbl">Nama filter baru</label><input id="pff-name" class="inp" maxlength="40" placeholder="Contoh: Pabrik Makanan & Minuman"></div>
+          <div><label class="lbl">Nama dalam bahasa Inggris (opsional)</label><input id="pff-en" class="inp" maxlength="40" placeholder="Food &amp; Beverage Plants"></div>
+          <button type="button" id="pff-add" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah filter</button>
+        </div>
+      </div>
+      <div id="pf-banner" class="mb-4"></div>
+      <div id="pf-list" class="space-y-3"></div>
+    </section>
+
+    <!-- Modal portofolio -->
+    <div id="pf-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-start sm:items-center justify-center p-3 overflow-y-auto">
+      <form id="pf-form" class="card w-full max-w-2xl p-5 sm:p-6 space-y-4 my-4">
+        <div class="flex items-center justify-between"><h3 id="pf-modal-title" class="text-lg font-bold text-slate-900">Tambah proyek</h3><button type="button" id="pf-close" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Tutup">&times;</button></div>
+        <div><label class="lbl">Foto proyek</label>
+          <div class="flex items-center gap-3">
+            <div class="w-28 h-20 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-slate-300 text-2xl"><img id="pf-prev" class="hidden w-full h-full object-cover" alt=""><i id="pf-prev-ic" class="fa-regular fa-image"></i></div>
+            <div class="flex-1 min-w-0 space-y-2"><label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-upload"></i> Pilih foto dari komputer<input type="file" id="pf-file" accept="image/*" class="hidden"></label><input id="pf-img" class="inp text-xs" placeholder="atau tempel alamat gambar (https://...)"></div>
+          </div></div>
+        <div><label class="lbl">Judul proyek *</label><input id="pf-title" class="inp" required placeholder="Contoh: Pemasangan Gas Piping System RS Surabaya"></div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Kelompok (untuk tombol filter)</label><select id="pf-cat" class="inp"></select></div>
+          <div class="grid grid-cols-2 gap-2"><div><label class="lbl">Label di foto</label><input id="pf-badge" class="inp" placeholder="INSTALASI MEDIS"></div><div><label class="lbl">Warna</label><select id="pf-badge-color" class="inp"></select></div></div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Lokasi / klien (kiri atas)</label><input id="pf-loc" class="inp" placeholder="Surabaya &amp; Sidoarjo"></div>
+          <div class="grid grid-cols-2 gap-2"><div><label class="lbl">Status (kanan atas)</label><input id="pf-status" class="inp" placeholder="Aktif Beroperasi"></div><div><label class="lbl">Warna</label><select id="pf-status-color" class="inp"></select></div></div>
+        </div>
+        <div><label class="lbl">Deskripsi proyek</label><textarea id="pf-desc" class="inp" rows="4" placeholder="Ceritakan pekerjaan yang dilakukan"></textarea></div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Info bawah (kiri)</label><input id="pf-fl" class="inp" placeholder="Layanan: Piping &amp; Delivery"></div>
+          <div class="grid grid-cols-2 gap-2"><div><label class="lbl">Info bawah (kanan)</label><input id="pf-fr" class="inp" placeholder="100% On-Time"></div><div><label class="lbl">Warna</label><select id="pf-foot-color" class="inp"></select></div></div>
+        </div>
+        <div class="border-t border-slate-200 pt-4 space-y-4">
+          <div><div class="text-sm font-bold text-slate-900">Halaman detail (tampil saat kartu proyek diklik)</div><p class="text-[11px] text-slate-500">Ikhtisar diambil otomatis dari isian di atas. Tambahkan penjelasan lengkap dan foto galeri di bawah ini (boleh dikosongkan).</p></div>
+          <div><label class="lbl">Penjelasan lengkap kegiatan</label><textarea id="pf-detail" class="inp" rows="7" placeholder="Ceritakan latar belakang, pekerjaan yang dilakukan, hasil, dan pihak yang terlibat. Tekan Enter untuk paragraf baru."></textarea></div>
+          <div><label class="lbl">Galeri foto <span id="pf-gal-n" class="text-slate-400 font-normal"></span></label>
+            <div id="pf-gal" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2"></div>
+            <label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-images"></i> Tambah foto (boleh pilih banyak)<input type="file" id="pf-gal-file" accept="image/*" multiple class="hidden"></label>
+          </div>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"><input type="checkbox" id="pf-active" checked> Tayangkan di website</label>
+        <details class="border border-slate-200 rounded-lg p-3">
+          <summary class="text-xs font-bold text-slate-600 cursor-pointer">Terjemahan Inggris (opsional, tampil saat pengunjung memilih EN)</summary>
+          <div class="space-y-3 mt-3">
+            <div><label class="lbl">Judul (EN)</label><input id="pf-en-title" class="inp"></div>
+            <div class="grid sm:grid-cols-3 gap-3"><div><label class="lbl">Label foto (EN)</label><input id="pf-en-badge" class="inp"></div><div><label class="lbl">Lokasi (EN)</label><input id="pf-en-location" class="inp"></div><div><label class="lbl">Status (EN)</label><input id="pf-en-status" class="inp"></div></div>
+            <div><label class="lbl">Deskripsi (EN)</label><textarea id="pf-en-description" class="inp" rows="3"></textarea></div>
+            <div><label class="lbl">Penjelasan lengkap (EN)</label><textarea id="pf-en-detail" class="inp" rows="5"></textarea></div>
+            <div class="grid sm:grid-cols-2 gap-3"><div><label class="lbl">Info bawah kiri (EN)</label><input id="pf-en-foot_left" class="inp"></div><div><label class="lbl">Info bawah kanan (EN)</label><input id="pf-en-foot_right" class="inp"></div></div>
+          </div>
+        </details>
+        <div class="flex justify-end gap-2 pt-1"><button type="button" id="pf-cancel" class="btn btn-ghost">Batal</button><button class="btn btn-primary" type="submit" id="pf-save">Simpan</button></div>
+      </form>
+    </div>
+
+    <!-- ============ KEGIATAN (GALERI KEGIATAN KANTOR) ============ -->
+    <section id="tab-activity" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Galeri Kegiatan</h2><p class="text-xs text-slate-500">Foto kegiatan kantor (outing, lomba 17 Agustusan, buka bersama, dll). Halaman Galeri di website langsung mengikuti daftar ini. Kegiatan terbaru taruh paling atas.</p></div>
+        <button id="ac-add" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah kegiatan</button>
+      </div>
+      <div id="ac-banner" class="mb-4"></div>
+      <div id="ac-list" class="space-y-3"></div>
+    </section>
+
+    <!-- Modal kegiatan -->
+    <div id="ac-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-start sm:items-center justify-center p-3 overflow-y-auto">
+      <form id="ac-form" class="card w-full max-w-2xl p-5 sm:p-6 space-y-4 my-4">
+        <div class="flex items-center justify-between"><h3 id="ac-modal-title" class="text-lg font-bold text-slate-900">Tambah kegiatan</h3><button type="button" id="ac-close" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Tutup">&times;</button></div>
+        <div><label class="lbl">Foto sampul (tampil di kisi galeri)</label>
+          <div class="flex items-center gap-3">
+            <div class="w-28 h-20 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-slate-300 text-2xl"><img id="ac-prev" class="hidden w-full h-full object-cover" alt=""><i id="ac-prev-ic" class="fa-regular fa-image"></i></div>
+            <div class="flex-1 min-w-0 space-y-2"><label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-upload"></i> Pilih foto dari komputer<input type="file" id="ac-file" accept="image/*" class="hidden"></label><input id="ac-img" class="inp text-xs" placeholder="atau tempel alamat gambar (https://...)"></div>
+          </div></div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-2"><label class="lbl">Judul kegiatan *</label><input id="ac-title" class="inp" required placeholder="Contoh: Lomba 17 Agustusan 2026"></div>
+          <div><label class="lbl">Tanggal kegiatan</label><input id="ac-date" type="date" class="inp"></div>
+        </div>
+        <div><label class="lbl">Deskripsi kegiatan</label><textarea id="ac-desc" class="inp" rows="5" placeholder="Ceritakan keseruan kegiatannya. Tekan Enter untuk paragraf baru."></textarea></div>
+        <div><label class="lbl">Foto tambahan <span id="ac-gal-n" class="text-slate-400 font-normal"></span></label>
+          <div id="ac-gal" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2"></div>
+          <label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-images"></i> Tambah foto (boleh pilih banyak)<input type="file" id="ac-gal-file" accept="image/*" multiple class="hidden"></label>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"><input type="checkbox" id="ac-active" checked> Tayangkan di website</label>
+        <details class="border border-slate-200 rounded-lg p-3">
+          <summary class="text-xs font-bold text-slate-600 cursor-pointer">Terjemahan Inggris (opsional, tampil saat pengunjung memilih EN)</summary>
+          <div class="space-y-3 mt-3">
+            <div><label class="lbl">Judul (EN)</label><input id="ac-en-title" class="inp"></div>
+            <div><label class="lbl">Deskripsi (EN)</label><textarea id="ac-en-description" class="inp" rows="4"></textarea></div>
+          </div>
+        </details>
+        <div class="flex justify-end gap-2 pt-1"><button type="button" id="ac-cancel" class="btn btn-ghost">Batal</button><button class="btn btn-primary" type="submit" id="ac-save">Simpan</button></div>
+      </form>
+    </div>
+
+    <!-- ============ INBOX ============ -->
+    <section id="tab-inbox" class="hidden-tab">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div><h2 class="text-xl font-bold text-slate-900">Pesan Masuk</h2><p class="text-xs text-slate-500">Lamaran kerja dan review dari pengunjung. Klik salah satu untuk membuka detailnya.</p></div>
+        <button id="ib-readall" class="btn btn-ghost"><i class="fa-solid fa-check-double"></i> Tandai semua dibaca</button>
+      </div>
+      <div id="ib-cats" class="grid sm:grid-cols-2 gap-3 mb-4"></div>
+      <div class="card p-3 mb-4 flex flex-wrap items-center gap-3">
+        <div id="ib-subs" class="flex flex-wrap gap-1.5 flex-1 min-w-[200px]"></div>
+        <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer"><input type="checkbox" id="ib-unread"> Hanya belum dibaca</label>
+        <input id="ib-q" class="inp !w-52" placeholder="Cari nama / isi pesan…"><input id="ib-gm" type="email" class="inp !w-56" title="Dipakai bila di browser ini login ke beberapa akun Google" placeholder="Gmail pengirim (opsional)">
+      </div>
+      <div id="ib-list" class="space-y-5"></div>
+    </section>
+
+    <!-- Modal lowongan -->
+    <div id="job-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-start sm:items-center justify-center p-3 overflow-y-auto">
+      <form id="job-form" class="card w-full max-w-2xl p-5 sm:p-6 space-y-4 my-4">
+        <div class="flex items-center justify-between"><h3 id="job-modal-title" class="text-lg font-bold text-slate-900">Tambah lowongan</h3><button type="button" id="job-close" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Tutup">&times;</button></div>
+        <div><label class="lbl">Judul posisi *</label><input id="jf-title" class="inp" required placeholder="Contoh: Teknisi Stasiun Pengisian (Filling Station Operator)"></div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Label kategori</label><input id="jf-category" class="inp" placeholder="Contoh: PABRIK &amp; OPERASIONAL"></div>
+          <div><label class="lbl">Warna label</label><select id="jf-color" class="inp"></select></div>
+        </div>
+        <div><label class="lbl">Lokasi penempatan</label><input id="jf-location" class="inp" placeholder="Contoh: Safe N Lock Sidoarjo"></div>
+        <div><label class="lbl">Deskripsi pekerjaan</label><textarea id="jf-desc" class="inp" rows="4" placeholder="Tugas dan tanggung jawab singkat"></textarea></div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Info 1</label><input id="jf-d1" class="inp" placeholder="Contoh: Status: Full-Time"></div>
+          <div><label class="lbl">Info 2</label><input id="jf-d2" class="inp" placeholder="Contoh: Pendidikan: SMK/D3 Teknik Mesin"></div>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"><input type="checkbox" id="jf-active" checked> Tayangkan di website</label>
+        <details class="border border-slate-200 rounded-lg p-3">
+          <summary class="text-xs font-bold text-slate-600 cursor-pointer">Terjemahan Inggris (opsional, tampil saat pengunjung memilih EN)</summary>
+          <div class="space-y-3 mt-3">
+            <div><label class="lbl">Judul (EN)</label><input id="jf-en-title" class="inp"></div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Label kategori (EN)</label><input id="jf-en-category" class="inp"></div>
+              <div><label class="lbl">Lokasi (EN)</label><input id="jf-en-location" class="inp"></div>
+            </div>
+            <div><label class="lbl">Deskripsi (EN)</label><textarea id="jf-en-desc" class="inp" rows="3"></textarea></div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Info 1 (EN)</label><input id="jf-en-d1" class="inp"></div>
+              <div><label class="lbl">Info 2 (EN)</label><input id="jf-en-d2" class="inp"></div>
+            </div>
+          </div>
+        </details>
+        <details class="border border-slate-200 rounded-lg p-3">
+          <summary class="text-xs font-bold text-slate-600 cursor-pointer">Pengaturan lanjutan</summary>
+          <div class="mt-3"><label class="lbl">Nama posisi yang tercatat di lamaran</label><input id="jf-role" class="inp" placeholder="Kosongkan = sama dengan judul"></div>
+        </details>
+        <div class="flex justify-end gap-2 pt-1"><button type="button" id="job-cancel" class="btn btn-ghost">Batal</button><button class="btn btn-primary" type="submit">Simpan</button></div>
+      </form>
+    </div>
+
+    <!-- ============ LINK PELACAK ============ -->
+    <section id="tab-links" class="hidden-tab">
+      <h2 class="text-xl font-bold text-slate-900 mb-1">Link Pelacak</h2>
+      <p class="text-xs text-slate-500 mb-4 max-w-2xl">Cara pakai: <b>(1)</b> pilih halaman tujuan, <b>(2)</b> klik <b>Salin link</b> di baris tempat Anda mau memasangnya, <b>(3)</b> tempel di bio / profil tempat itu. Setelah itu menu Statistik tahu persis berapa pengunjung yang datang dari sana.</p>
+      <div class="card p-4 max-w-3xl mb-4">
+        <label class="lbl">1. Pengunjung diarahkan ke halaman mana?</label>
+        <select id="u-page" class="inp max-w-sm"></select>
+        <details class="mt-3"><summary class="text-xs font-semibold text-slate-500 cursor-pointer">Opsi tambahan (boleh dilewati)</summary>
+          <div class="mt-2 max-w-sm"><label class="lbl">Nama kampanye</label><input id="u-camp" class="inp" placeholder="contoh: promo-nov-2026"><p class="text-[11px] text-slate-400 mt-1">Hanya berguna bila ingin membedakan beberapa promo di tempat yang sama.</p></div></details>
+      </div>
+      <div class="max-w-3xl"><div class="lbl mb-2">2. Salin link untuk tempat yang Anda pakai</div><div id="u-list" class="space-y-2"></div></div>
+      <p class="text-[11px] text-slate-500 mt-4 max-w-3xl"><i class="fa-solid fa-circle-info"></i> Instagram, WhatsApp, dan TikTok sering menyembunyikan asal pengunjung. Karena itu pasang link khusus di atas, bukan link biasa. Link yang lama tetap berfungsi, hanya saja tidak tercatat dari mana asalnya.</p>
+    </section>
+
+    <!-- ============ BANTUAN ============ -->
+    <section id="tab-help" class="hidden-tab">
+      <h2 class="text-xl font-bold text-slate-900 mb-4">Bantuan</h2>
+      <div class="card p-5 max-w-3xl text-sm space-y-3 leading-relaxed">
+        <p><b>Mengubah teks:</b> Menu <i>Edit Website</i> → pilih halaman → klik teks → ubah kolom Indonesia dan English → Simpan.</p>
+        <p><b>Mengganti foto:</b> klik gambar → Unggah gambar. Gunakan foto JPG/PNG/WebP di bawah 2 MB agar website tetap cepat.</p>
+        <p><b>Ganti nomor WhatsApp / link sosial media:</b> klik ikon atau tombolnya → ubah kolom Link. Format WhatsApp: <code>https://wa.me/628123456789</code>. Teks nomor yang tampil diubah dengan mengklik tulisannya.</p>
+        <p><b>Menambah produk / proyek:</b> klik kartu yang mirip → Duplikat kartu → klik teks dan foto kartu baru untuk mengubahnya. Centang opsi form penawaran agar produk bisa dipesan.</p>
+        <p><b>Menyembunyikan produk:</b> klik kartu → Sembunyikan. Kartu tampak pudar di editor, tidak tampil di website, dan bisa ditampilkan lagi.</p>
+        <p><b>Kembali ke aslinya:</b> klik bagian yang diubah → tombol "Kembalikan ke asli".</p>
+        <p><b>Kunjungan Anda sendiri</b> tidak dihitung di statistik pada browser ini setelah Anda login.</p>
+        <p class="text-xs text-slate-500">Catatan: perubahan hanya mengganti isi yang ada di halaman. Kalau struktur halaman diubah developer, buka lagi halaman terkait untuk memeriksanya.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="assets/js/supabase.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function norm(s) { return String(s).replace(/\s+/g, ' ').trim(); }
+  var sb = (typeof supabaseClient !== 'undefined') ? supabaseClient : null;
+  var configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured() && sb;
+
+  var toastT;
+  function toast(msg, err) {
+    var t = $('#toast'); t.textContent = msg; t.className = 'toast' + (err ? ' err' : '');
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.add('hidden'); }, err ? 5000 : 2200);
+  }
+  function fail(e) { console.error(e); toast('Gagal: ' + (e && e.message ? e.message : e), true); }
+
+  /* ---------------------------------- Login ---------------------------------- */
+  var SRC = {
+    instagram: ['Instagram', '#E1306C', 'fa-brands fa-instagram'], whatsapp: ['WhatsApp', '#22c55e', 'fa-brands fa-whatsapp'],
+    linkedin: ['LinkedIn', '#0A66C2', 'fa-brands fa-linkedin-in'], tiktok: ['TikTok', '#0f172a', 'fa-brands fa-tiktok'],
+    facebook: ['Facebook', '#1877F2', 'fa-brands fa-facebook-f'], youtube: ['YouTube', '#ef4444', 'fa-brands fa-youtube'],
+    google: ['Google (pencarian)', '#f59e0b', 'fa-brands fa-google'], bing: ['Bing', '#0ea5e9', 'fa-solid fa-magnifying-glass'],
+    direct: ['Langsung / tidak diketahui', '#64748b', 'fa-solid fa-arrow-pointer'], email: ['Email', '#8b5cf6', 'fa-solid fa-envelope'],
+    brosur: ['Brosur / QR', '#14b8a6', 'fa-solid fa-qrcode'], telegram: ['Telegram', '#38bdf8', 'fa-brands fa-telegram'], x: ['X / Twitter', '#111827', 'fa-brands fa-x-twitter'],
+    'google-bisnisku': ['Google Business', '#f59e0b', 'fa-brands fa-google']
+  };
+  function srcMeta(k) { return SRC[k] || [k, '#94a3b8', 'fa-solid fa-globe']; }
+
+  if (!configured) $('#setup-warning').classList.remove('hidden');
+  $('#login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = $('#login-err'); err.classList.add('hidden');
+    if (!configured) { err.textContent = 'Supabase belum dikonfigurasi.'; err.classList.remove('hidden'); return; }
+    sb.auth.signInWithPassword({ email: $('#login-email').value.trim(), password: $('#login-pass').value }).then(function (r) {
+      if (r.error) { err.textContent = 'Email atau kata sandi salah.'; err.classList.remove('hidden'); return; }
+      enter(r.data.session);
+    });
+  });
+  $('#btn-logout').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
+
+  var entered = false;
+  function enter(session) {
+    if (!session || entered) return;
+    // pastikan benar-benar admin (bukan sekadar akun terdaftar)
+    sb.rpc('is_admin').then(function (r) {
+      if (r.error || r.data !== true) {
+        sb.auth.signOut();
+        var err = $('#login-err'); err.textContent = 'Akun ini bukan admin. Daftarkan emailnya di tabel admin_users.'; err.classList.remove('hidden');
+        return;
+      }
+      entered = true;
+      try { localStorage.setItem('candiNoTrack', '1'); } catch (e) {}
+      $('#view-login').classList.add('hidden'); $('#view-app').classList.remove('hidden');
+      $('#user-email').textContent = session.user.email; $('#user-email').classList.remove('hidden');
+      initApp();
+    });
+  }
+  if (configured) sb.auth.getSession().then(function (r) { if (r.data && r.data.session) enter(r.data.session); });
+
+  /* ---------------------------------- Tab ------------------------------------ */
+  var inited = {};
+  function showTab(t) {
+    $$('.tab-btn[data-tab]').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === t); });
+    ['dashboard', 'editor', 'gallery', 'quote', 'portfolio', 'activity', 'jobs', 'inbox', 'links', 'help'].forEach(function (n) { $('#tab-' + n).classList.toggle('hidden-tab', n !== t); });
+    if (!inited[t]) { inited[t] = true; ({ dashboard: loadDash, editor: initEditor, quote: initQuote, gallery: initGallery, portfolio: initPortfolio, activity: initActivity, jobs: initJobs, inbox: initInbox, links: initLinks }[t] || function () {})(); }
+  }
+  function initApp() {
+    $$('.tab-btn[data-tab]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.dataset.tab); }); });
+    showTab('dashboard');
+    refreshBadge();
+  }
+
+  /* ------------------------------- Data helpers ------------------------------- */
+  function upsert(rows) { return sb.from('site_content').upsert(rows, { onConflict: 'kind,key,scope' }).then(function (r) { if (r.error) throw r.error; }); }
+  function remove(m) { return sb.from('site_content').delete().match(m).then(function (r) { if (r.error) throw r.error; }); }
+  function getConfig(key) {
+    return sb.from('site_content').select('value_id').match({ kind: 'config', key: key, scope: '' }).maybeSingle().then(function (r) {
+      try { return r.data ? JSON.parse(r.data.value_id) : null; } catch (e) { return null; }
+    });
+  }
+  function setConfig(key, obj) { return upsert([{ kind: 'config', key: key, scope: '', value_id: JSON.stringify(obj), updated_at: new Date().toISOString() }]); }
+
+  /* ------------------------------- STATISTIK -------------------------------- */
+  function day(d) { return d.toLocaleDateString('en-CA'); }
+  function fetchViews(since) {
+    var all = [], from = 0, step = 1000;
+    function next() {
+      return sb.from('page_views').select('created_at,visitor_id,session_id,path,source,medium,device,lang,campaign')
+        .gte('created_at', since.toISOString()).order('created_at', { ascending: true }).range(from, from + step - 1)
+        .then(function (r) {
+          if (r.error) throw r.error;
+          all = all.concat(r.data || []);
+          if ((r.data || []).length === step && all.length < 50000) { from += step; return next(); }
+          return all;
+        });
+    }
+    return next();
+  }
+  function bars(el, entries, total, colorFn, labelFn) {
+    if (!entries.length) { el.innerHTML = '<p class="text-xs text-slate-400">Belum ada data.</p>'; return; }
+    el.innerHTML = entries.map(function (e) {
+      var pct = total ? Math.round(e[1] * 1000 / total) / 10 : 0, c = colorFn ? colorFn(e[0]) : '#0284c7';
+      return '<div><div class="flex justify-between text-xs mb-1"><span class="font-semibold">' + labelFn(e[0]) + '</span><span class="text-slate-500">' + e[1] + ' · ' + pct + '%</span></div>' +
+        '<div class="bar"><i style="width:' + Math.max(pct, 2) + '%;background:' + c + '"></i></div></div>';
+    }).join('');
+  }
+  function tally(list, fn) { var m = {}; list.forEach(function (x) { var k = fn(x) || '-'; m[k] = (m[k] || 0) + 1; }); return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; }); }
+  var PAGE_NAME = { 'index.html': 'Beranda', 'about.html': 'Tentang Kami', 'products.html': 'Produk & Layanan', 'portfolio.html': 'Portofolio', 'gallery.html': 'Galeri Kegiatan', 'career.html': 'Karir', 'contact.html': 'Kontak', 'quote.html': 'Ajukan Penawaran' };
+
+  function loadDash() {
+    var days = +$('#range').value, since = new Date(); since.setHours(0, 0, 0, 0); since.setDate(since.getDate() - (days - 1));
+    $('#dash-msg').classList.add('hidden');
+    $('#kpis').innerHTML = '<div class="col-span-full text-sm text-slate-500">Memuat…</div>';
+    Promise.all([
+      fetchViews(since),
+      sb.from('career_applications').select('id', { count: 'exact', head: true }).gte('created_at', since.toISOString()),
+      sb.from('reviews').select('id', { count: 'exact', head: true }).gte('created_at', since.toISOString())
+    ]).then(function (res) {
+      var v = res[0], applic = res[1].count || 0, revs = res[2].count || 0;
+      var visitors = {}, sessions = {}, sessSrc = {};
+      v.forEach(function (x) { visitors[x.visitor_id] = 1; if (!sessions[x.session_id]) { sessions[x.session_id] = 1; sessSrc[x.session_id] = x; } });
+      var nV = Object.keys(visitors).length, nS = Object.keys(sessions).length;
+      if (!v.length) { var m = $('#dash-msg'); m.textContent = 'Belum ada kunjungan tercatat pada periode ini. Pastikan website sudah di-hosting dan SQL setup sudah dijalankan. Kunjungan Anda sendiri tidak dihitung.'; m.classList.remove('hidden'); }
+      function kpi(label, val, icon, col) { return '<div class="card p-4"><div class="flex items-center gap-2 text-[11px] font-bold uppercase text-slate-500"><i class="fa-solid ' + icon + '" style="color:' + col + '"></i>' + label + '</div><div class="text-2xl font-bold mt-1">' + val + '</div></div>'; }
+      $('#kpis').innerHTML = kpi('Tampilan halaman', v.length, 'fa-eye', '#0284c7') + kpi('Pengunjung unik', nV, 'fa-user', '#10b981') + kpi('Sesi', nS, 'fa-door-open', '#8b5cf6') +
+        kpi('Lamaran masuk', applic, 'fa-user-tie', '#8b5cf6') + kpi('Review masuk', revs, 'fa-star', '#f59e0b');
+
+      var perDay = {}, d = new Date(since);
+      for (var i = 0; i < days; i++) { perDay[day(d)] = { v: 0, u: {} }; d.setDate(d.getDate() + 1); }
+      v.forEach(function (x) { var k = day(new Date(x.created_at)); if (perDay[k]) { perDay[k].v++; perDay[k].u[x.visitor_id] = 1; } });
+      drawChart(Object.keys(perDay).map(function (k) { return { d: k, v: perDay[k].v, u: Object.keys(perDay[k].u).length }; }));
+
+      var ss = Object.keys(sessSrc).map(function (k) { return sessSrc[k]; });
+      bars($('#sources'), tally(ss, function (x) { return x.source; }), ss.length, function (k) { return srcMeta(k)[1]; },
+        function (k) { var m = srcMeta(k); return '<i class="' + m[2] + ' mr-1.5" style="color:' + m[1] + '"></i>' + esc(m[0]); });
+      bars($('#pages'), tally(v, function (x) { return x.path; }).slice(0, 7), v.length, null, function (k) { return esc(PAGE_NAME[k] || k); });
+      bars($('#devices'), tally(ss, function (x) { return x.device; }), ss.length, null, function (k) { return { mobile: 'HP', desktop: 'Komputer', tablet: 'Tablet' }[k] || esc(k); });
+      bars($('#langs'), tally(ss, function (x) { return x.lang; }), ss.length, null, function (k) { return { id: 'Indonesia', en: 'English' }[k] || esc(k); });
+      bars($('#mediums'), tally(ss, function (x) { return x.medium; }), ss.length, null, function (k) { return { social: 'Media sosial', search: 'Mesin pencari', direct: 'Langsung', messaging: 'Aplikasi chat', referral: 'Website lain', email: 'Email', offline: 'Offline (brosur/QR)', campaign: 'Kampanye' }[k] || esc(k); });
+      $('#recent').innerHTML = v.slice(-20).reverse().map(function (x) {
+        var m = srcMeta(x.source);
+        return '<tr class="border-t border-slate-100"><td class="py-1.5 whitespace-nowrap">' + new Date(x.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) +
+          '</td><td>' + esc(PAGE_NAME[x.path] || x.path) + '</td><td><i class="' + m[2] + ' mr-1" style="color:' + m[1] + '"></i>' + esc(m[0]) + '</td><td>' + esc(x.device || '-') + '</td></tr>';
+      }).join('') || '<tr><td colspan="4" class="py-3 text-slate-400">Belum ada.</td></tr>';
+    }).catch(function (e) { $('#kpis').innerHTML = ''; fail(e); });
+  }
+  function drawChart(data) {
+    var W = 800, H = 220, pl = 34, pb = 26, pt = 10, pr = 8;
+    var max = Math.max(4, Math.max.apply(null, data.map(function (x) { return x.v; })));
+    var n = data.length, step = n > 1 ? (W - pl - pr) / (n - 1) : 0;
+    function X(i) { return pl + (n > 1 ? i * step : (W - pl - pr) / 2); }
+    function Y(val) { return pt + (H - pt - pb) * (1 - val / max); }
+    var grid = '';
+    for (var g = 0; g <= 4; g++) { var gv = Math.round(max * g / 4), gy = Y(max * g / 4); grid += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + gy + '" y2="' + gy + '" stroke="#e2e8f0"/><text x="' + (pl - 6) + '" y="' + (gy + 3) + '" font-size="10" text-anchor="end" fill="#94a3b8">' + gv + '</text>'; }
+    function path(key) { return data.map(function (x, i) { return (i ? 'L' : 'M') + X(i) + ' ' + Y(x[key]); }).join(' '); }
+    var labels = data.map(function (x, i) { if (n > 12 && i % Math.ceil(n / 8) !== 0 && i !== n - 1) return ''; var p = x.d.split('-'); return '<text x="' + X(i) + '" y="' + (H - 8) + '" font-size="10" text-anchor="middle" fill="#94a3b8">' + p[2] + '/' + p[1] + '</text>'; }).join('');
+    var dots = data.map(function (x, i) { return '<circle cx="' + X(i) + '" cy="' + Y(x.v) + '" r="3" fill="#0284c7"><title>' + x.d + ': ' + x.v + ' tampilan, ' + x.u + ' pengunjung</title></circle>'; }).join('');
+    $('#chart').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full" role="img" aria-label="Grafik kunjungan per hari">' + grid + labels +
+      '<path d="' + path('v') + '" fill="none" stroke="#0284c7" stroke-width="2.5"/><path d="' + path('u') + '" fill="none" stroke="#10b981" stroke-width="2.5"/>' + dots + '</svg>';
+  }
+  $('#range').addEventListener('change', loadDash);
+  $('#btn-refresh').addEventListener('click', loadDash);
+
+  /* --------------------------------- EDITOR ---------------------------------- */
+  var PAGES = [['index.html', 'Beranda'], ['about.html', 'Tentang'], ['products.html', 'Produk'], ['portfolio.html', 'Portofolio'], ['gallery.html', 'Galeri Kegiatan'], ['career.html', 'Karir'], ['contact.html', 'Kontak'], ['quote.html', 'Penawaran']];
+  var curPage = 'index.html', sel = null, frame;
+  function initEditor() {
+    frame = $('#frame');
+    if (location.protocol === 'file:') $('#file-warning').classList.remove('hidden');
+    $('#page-tabs').innerHTML = PAGES.map(function (p) { return '<button class="btn btn-ghost" data-pg="' + p[0] + '">' + p[1] + '</button>'; }).join('');
+    $$('#page-tabs [data-pg]').forEach(function (b) { b.addEventListener('click', function () { loadPage(b.dataset.pg); }); });
+    $$('[data-vw]').forEach(function (b) { b.addEventListener('click', function () { frame.style.width = b.dataset.vw; }); });
+    window.addEventListener('message', function (e) {
+      if (e.origin !== location.origin || !e.data || !e.data.cms) return;
+      if (e.source === frame.contentWindow) { if (e.data.cms === 'select') select(e.data.data); if (e.data.cms === 'reloaded') clearPanel(); }
+    });
+    loadPage('index.html');
+  }
+  function loadPage(p) {
+    curPage = p; clearPanel();
+    $$('#page-tabs [data-pg]').forEach(function (b) { b.classList.toggle('btn-primary', b.dataset.pg === p); b.classList.toggle('btn-ghost', b.dataset.pg !== p); });
+    frame.src = p + '?cms_edit=1';
+  }
+  function reloadFrame() { frame.contentWindow.postMessage({ cms: 'reload' }, location.origin); }
+  function clearPanel() { sel = null; $('#panel-empty').classList.remove('hidden'); $('#panel-body').classList.add('hidden'); }
+
+  function select(d) {
+    sel = d;
+    var h = '';
+    if (d.scope) h += '<div class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1.5"><i class="fa-solid fa-clone"></i> Bagian dari kartu tambahan. Perubahan hanya berlaku untuk kartu ini.</div>';
+    d.texts.forEach(function (t, i) {
+      h += '<div class="space-y-2" data-text="' + i + '"><div class="lbl">Teks ' + (d.texts.length > 1 ? (i + 1) : '') + '</div>' +
+        '<div class="text-[11px] text-slate-400 line-clamp-2">Asli: ' + esc(t.orig.slice(0, 120)) + '</div>' +
+        '<label class="lbl !text-slate-500">Indonesia</label><textarea class="inp t-id" rows="' + Math.min(6, Math.max(2, Math.ceil(t.id.length / 38))) + '">' + esc(t.id) + '</textarea>' +
+        '<label class="lbl !text-slate-500">English</label><textarea class="inp t-en" rows="' + Math.min(6, Math.max(2, Math.ceil((t.en || t.id).length / 38))) + '" placeholder="Terjemahan English">' + esc(t.en) + '</textarea>' +
+        '<div class="flex gap-2"><button class="btn btn-primary t-save"><i class="fa-solid fa-check"></i> Simpan</button><button class="btn btn-ghost t-reset">Kembalikan ke asli</button></div></div>';
+    });
+    if (d.img) h += '<div class="space-y-2 pt-3 border-t border-slate-200" id="img-box"><div class="lbl">Gambar</div><img src="' + esc(d.img.src) + '" class="w-full h-32 object-cover rounded-lg border border-slate-200" alt="">' +
+      '<label class="btn btn-primary cursor-pointer w-full justify-center"><i class="fa-solid fa-upload"></i> Unggah gambar baru<input type="file" id="img-file" accept="image/*" class="hidden"></label>' +
+      '<label class="lbl !text-slate-500">atau alamat gambar (URL)</label><input class="inp" id="img-url" value="' + esc(d.img.cur) + '">' +
+      '<div class="flex gap-2"><button class="btn btn-ghost" id="img-save">Simpan URL</button><button class="btn btn-ghost" id="img-reset">Kembalikan ke asli</button></div></div>';
+    if (d.href) h += '<div class="space-y-2 pt-3 border-t border-slate-200"><div class="lbl">Link tombol / ikon</div>' +
+      '<input class="inp" id="href-val" value="' + esc(d.href.cur) + '"><p class="text-[11px] text-slate-400">WhatsApp: https://wa.me/628xxxxxxxxxx · Instagram: https://instagram.com/akun · Email: mailto:nama@email.com · Telepon: tel:+62...</p>' +
+      '<div class="flex gap-2"><button class="btn btn-primary" id="href-save"><i class="fa-solid fa-check"></i> Simpan link</button><button class="btn btn-ghost" id="href-reset">Kembalikan ke asli</button></div></div>';
+    if (d.card) {
+      h += '<div class="space-y-2 pt-3 border-t border-slate-200"><div class="lbl">Kartu: ' + esc(d.card.title.slice(0, 50)) + '</div><div class="flex flex-wrap gap-2">';
+      h += '<button class="btn btn-ghost" id="card-dup"><i class="fa-solid fa-clone"></i> Duplikat kartu</button>';
+      if (d.card.isClone) h += '<button class="btn btn-danger" id="card-del"><i class="fa-solid fa-trash"></i> Hapus kartu ini</button>';
+      else h += '<button class="btn btn-ghost" id="card-hide"><i class="fa-solid ' + (d.card.hidden ? 'fa-eye' : 'fa-eye-slash') + '"></i> ' + (d.card.hidden ? 'Tampilkan kembali' : 'Sembunyikan') + '</button>';
+      h += '</div><div id="dup-box"></div></div>';
+    }
+    if (!d.texts.length && !d.img && !d.href && !d.card) h = '<p class="text-sm text-slate-500">Bagian ini tidak bisa diedit. Coba klik teks, gambar, atau kartu di dekatnya.</p>';
+    var body = $('#panel-body'); body.innerHTML = h;
+    $('#panel-empty').classList.add('hidden'); body.classList.remove('hidden');
+    bindPanel(d);
+  }
+
+  function done(msg) { toast(msg); reloadFrame(); }
+  function bindPanel(d) {
+    $$('[data-text]').forEach(function (box) {
+      var t = d.texts[+box.dataset.text];
+      $('.t-save', box).addEventListener('click', function () {
+        var id = $('.t-id', box).value, en = $('.t-en', box).value.trim();
+        if (id !== t.orig && !en) { if (!confirm('Kolom English kosong. Versi English akan tampil dengan teks Indonesia. Lanjut simpan?')) return; }
+        upsert([{ kind: 'text', key: t.orig, scope: d.scope || '', value_id: id, value_en: en || null, updated_at: new Date().toISOString() }]).then(function () { done('Teks tersimpan'); }).catch(fail);
+      });
+      $('.t-reset', box).addEventListener('click', function () {
+        remove({ kind: 'text', key: t.orig, scope: d.scope || '' }).then(function () { done('Dikembalikan ke asli'); }).catch(fail);
+      });
+    });
+    var fi = $('#img-file');
+    if (fi) {
+      fi.addEventListener('change', function () {
+        var f = fi.files[0]; if (!f) return;
+        if (f.size > 5 * 1024 * 1024) { toast('Ukuran gambar maksimal 5 MB', true); return; }
+        toast('Mengunggah…');
+        var path = Date.now() + '-' + f.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-');
+        sb.storage.from('site-media').upload(path, f, { cacheControl: '31536000', upsert: false }).then(function (r) {
+          if (r.error) throw r.error;
+          var url = sb.storage.from('site-media').getPublicUrl(path).data.publicUrl;
+          return upsert([{ kind: 'img', key: d.img.orig, scope: d.scope || '', value_id: url, updated_at: new Date().toISOString() }]);
+        }).then(function () { done('Gambar diganti'); }).catch(fail);
+      });
+      $('#img-save').addEventListener('click', function () {
+        var u = $('#img-url').value.trim(); if (!u) return;
+        upsert([{ kind: 'img', key: d.img.orig, scope: d.scope || '', value_id: u, updated_at: new Date().toISOString() }]).then(function () { done('Gambar diganti'); }).catch(fail);
+      });
+      $('#img-reset').addEventListener('click', function () { remove({ kind: 'img', key: d.img.orig, scope: d.scope || '' }).then(function () { done('Dikembalikan ke asli'); }).catch(fail); });
+    }
+    if ($('#href-save')) {
+      $('#href-save').addEventListener('click', function () {
+        var u = $('#href-val').value.trim(); if (!u) return;
+        if (/^\s*javascript:/i.test(u)) { toast('Link tidak valid', true); return; }
+        upsert([{ kind: 'href', key: d.href.orig, scope: d.scope || '', value_id: u, updated_at: new Date().toISOString() }]).then(function () { done('Link tersimpan'); }).catch(fail);
+      });
+      $('#href-reset').addEventListener('click', function () { remove({ kind: 'href', key: d.href.orig, scope: d.scope || '' }).then(function () { done('Dikembalikan ke asli'); }).catch(fail); });
+    }
+    if ($('#card-hide')) $('#card-hide').addEventListener('click', function () {
+      (d.card.hidden ? remove({ kind: 'hide', key: d.card.sig, scope: '' }) : upsert([{ kind: 'hide', key: d.card.sig, scope: '', value_id: '1' }])).then(function () { done(d.card.hidden ? 'Kartu ditampilkan' : 'Kartu disembunyikan'); }).catch(fail);
+    });
+    if ($('#card-del')) $('#card-del').addEventListener('click', function () {
+      if (!confirm('Hapus kartu tambahan ini?')) return;
+      remove({ kind: 'clone', key: d.card.sig, scope: d.card.scope }).then(function () {
+        return sb.from('site_content').delete().eq('scope', d.card.scope);
+      }).then(function () { done('Kartu dihapus'); }).catch(fail);
+    });
+    if ($('#card-dup')) $('#card-dup').addEventListener('click', function () { dupDialog(d); });
+  }
+
+  var QCAT = { gases: 'gas', services: 'service', equipment: 'equipment' };
+  function dupDialog(d) {
+    var box = $('#dup-box'), canQuote = curPage === 'products.html' && QCAT[d.card.section];
+    box.innerHTML = '<div class="mt-2 p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2">' +
+      '<p class="text-xs text-slate-600">Kartu salinan akan muncul tepat setelah kartu ini. Klik teks dan fotonya untuk mengubah isinya.</p>' +
+      (canQuote ? '<label class="flex items-start gap-2 text-xs"><input type="checkbox" id="dup-quote" class="mt-0.5"> <span>Tambahkan juga ke form penawaran dan pencarian</span></label>' +
+        '<div id="dup-name-wrap" class="hidden"><label class="lbl">Nama produk di form penawaran</label><input id="dup-name" class="inp" placeholder="contoh: Hidrogen (H2)"></div>' : '') +
+      '<button class="btn btn-primary" id="dup-go"><i class="fa-solid fa-clone"></i> Buat salinan</button></div>';
+    if (canQuote) $('#dup-quote').addEventListener('change', function () { $('#dup-name-wrap').classList.toggle('hidden', !this.checked); });
+    $('#dup-go').addEventListener('click', function () {
+      var scope = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      var qName = canQuote && $('#dup-quote').checked ? $('#dup-name').value.trim() : '';
+      if (canQuote && $('#dup-quote').checked && !qName) { toast('Isi nama produk untuk form penawaran', true); return; }
+      var p = upsert([{ kind: 'clone', key: d.card.sig, scope: scope, value_id: '', position: Date.now() }]);
+      if (d.card.isClone) p = p.then(function () { // salin isi kartu sumber
+        return sb.from('site_content').select('kind,key,value_id,value_en').eq('scope', d.card.scope).in('kind', ['text', 'img', 'href']).then(function (r) {
+          if (r.error) throw r.error;
+          if (r.data && r.data.length) return upsert(r.data.map(function (x) { return { kind: x.kind, key: x.key, scope: scope, value_id: x.value_id, value_en: x.value_en }; }));
+        });
+      });
+      if (qName) p = p.then(function () { return getConfig('quote'); }).then(function (cfg) {
+        cfg = cfg || {}; cfg.products = cfg.products || [];
+        if (!cfg.products.some(function (x) { return x.name === qName; })) cfg.products.push({ name: qName, label: qName, category: QCAT[d.card.section], specs: null, variant: null, search: true });
+        return setConfig('quote', cfg);
+      });
+      p.then(function () { done('Kartu disalin. Klik kartu baru untuk mengedit.'); if (qName && inited.quote) { initQuote(); } }).catch(fail);
+    });
+  }
+
+  /* ----------------------------- FORM PENAWARAN ------------------------------ */
+  var qBase = null, qCfg = null;
+  function lines(items) { return (items || []).map(function (i) { return typeof i === 'string' ? i : (i[0] === i[1] ? i[0] : i[0] + ' | ' + i[1]); }).join('\n'); }
+  function parseLines(t) { return t.split('\n').map(function (l) { return l.trim(); }).filter(Boolean).map(function (l) { var p = l.split('|').map(function (x) { return x.trim(); }); return p.length > 1 && p[1] ? [p[0], p[1]] : p[0]; }); }
+  function flatSpecs(b, cat, name) {
+    var groups = b.PER_PRODUCT[name] || b.SPECS[cat] || [], out = [];
+    groups.forEach(function (g) { g.items.forEach(function (i) { out.push(i); }); });
+    return out;
+  }
+  function initQuote() {
+    $('#q-list').innerHTML = '<p class="text-sm text-slate-500">Memuat…</p>';
+    var probe = document.createElement('iframe'); probe.style.display = 'none';
+    var got = false;
+    function onMsg(e) {
+      if (e.source !== probe.contentWindow || !e.data || e.data.cms !== 'quoteBase') return;
+      got = true; window.removeEventListener('message', onMsg); qBase = e.data.base; probe.remove();
+      getConfig('quote').then(function (c) { qCfg = c || { products: [], hidden: [], overrides: {} }; qCfg.products = qCfg.products || []; qCfg.hidden = qCfg.hidden || []; qCfg.overrides = qCfg.overrides || {}; renderQuote(); }).catch(fail);
+    }
+    window.addEventListener('message', onMsg);
+    probe.src = 'quote.html?cms_probe=1'; document.body.appendChild(probe);
+    setTimeout(function () { if (!got) { $('#q-list').innerHTML = '<div class="card p-4 text-sm text-amber-800 bg-amber-50">Tidak bisa membaca form penawaran. Pastikan website sudah di-hosting dan <code>cms.js</code> terpasang di quote.html.</div>'; } }, 8000);
+  }
+  var CATS = [['gas', 'Produk Gas'], ['service', 'Layanan'], ['equipment', 'Perlengkapan']];
+  function qRow(r) {
+    var vOn = !!r.variant;
+    return '<div class="card p-4" data-q="' + esc(r.key) + '" data-new="' + (r.isNew ? 1 : 0) + '" data-cat="' + esc(r.category) + '">' +
+      '<div class="flex flex-wrap items-center gap-3 mb-3"><div class="font-bold text-sm flex-1 min-w-[160px]">' + esc(r.label) + ' <span class="text-[10px] font-normal text-slate-400">' + esc((CATS.filter(function (c) { return c[0] === r.category; })[0] || [0, ''])[1]) + (r.isNew ? ' · baru' : '') + '</span></div>' +
+      '<label class="flex items-center gap-2 text-xs font-semibold"><input type="checkbox" class="q-show" ' + (r.shown ? 'checked' : '') + '> Tampil di form</label>' +
+      (r.isNew ? '<button class="btn btn-danger q-del !py-1"><i class="fa-solid fa-trash"></i></button>' : '') + '</div>' +
+      '<div class="grid lg:grid-cols-2 gap-4"><div><label class="lbl">Ukuran / spesifikasi (satu per baris)</label><textarea class="inp q-specs font-mono text-xs" rows="5" data-init="' + esc(r.specs) + '">' + esc(r.specs) + '</textarea></div>' +
+      '<div><label class="flex items-center gap-2 lbl"><input type="checkbox" class="q-von" ' + (vOn ? 'checked' : '') + '> Pakai sub pilihan (varian)</label>' +
+      '<div class="q-vbox space-y-2 ' + (vOn ? '' : 'hidden') + '"><input class="inp q-vlabel" placeholder="Judul, contoh: Tingkat Kemurnian *" value="' + esc(r.variant ? r.variant.label : '') + '">' +
+      '<input class="inp q-vph" placeholder="Teks awal, contoh: Pilih tingkat kemurnian..." value="' + esc(r.variant ? r.variant.placeholder : '') + '">' +
+      '<textarea class="inp q-vitems font-mono text-xs" rows="3" placeholder="WG | WG (Welding Grade)">' + esc(r.variant ? lines(r.variant.items) : '') + '</textarea></div></div></div></div>';
+  }
+  function renderQuote() {
+    var rows = [], seen = {};
+    qBase.options.forEach(function (o) {
+      seen[o.value] = 1;
+      var ov = qCfg.overrides[o.value] || {};
+      var specs = ov.specs || flatSpecs(qBase, o.category, o.value);
+      var variant = ov.variant === false ? null : (ov.variant || qBase.VARIANTS[o.value] || null);
+      rows.push({ key: o.value, label: o.label, category: o.category, shown: qCfg.hidden.indexOf(o.value) === -1, specs: lines(specs), variant: variant, isNew: false });
+    });
+    qCfg.products.forEach(function (p) {
+      var specs = p.specs || flatSpecs(qBase, p.category, p.name);
+      rows.push({ key: p.name, label: p.label || p.name, category: p.category, shown: true, specs: lines(specs), variant: p.variant || null, isNew: true, search: p.search });
+    });
+    $('#q-list').innerHTML = rows.map(qRow).join('');
+    $$('#q-list [data-q]').forEach(bindQRow);
+  }
+  function bindQRow(el) {
+    $('.q-von', el).addEventListener('change', function () { $('.q-vbox', el).classList.toggle('hidden', !this.checked); });
+    var del = $('.q-del', el);
+    if (del) del.addEventListener('click', function () { if (confirm('Hapus produk ini dari form penawaran?')) el.remove(); });
+  }
+  $('#q-add').addEventListener('click', function () {
+    if (!qBase) return;
+    var name = prompt('Nama produk baru (contoh: Hidrogen (H2))'); if (!name) return;
+    var cat = (prompt('Kategori? ketik: gas, service, atau equipment', 'gas') || 'gas').trim().toLowerCase();
+    if (['gas', 'service', 'equipment'].indexOf(cat) === -1) cat = 'gas';
+    var wrap = document.createElement('div'); wrap.innerHTML = qRow({ key: name.trim(), label: name.trim(), category: cat, shown: true, specs: lines(flatSpecs(qBase, cat, name.trim())), variant: null, isNew: true });
+    var el = wrap.firstChild; $('#q-list').appendChild(el); bindQRow(el); el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  $('#q-save').addEventListener('click', function () {
+    if (!qBase) return;
+    var cfg = { products: [], hidden: [], overrides: {} };
+    $$('#q-list [data-q]').forEach(function (el) {
+      var name = el.dataset.q, isNew = el.dataset.new === '1', cat = el.dataset.cat;
+      var specsEl = $('.q-specs', el), specs = parseLines(specsEl.value), changedSpecs = specsEl.value !== specsEl.dataset.init;
+      var variant = null;
+      if ($('.q-von', el).checked) {
+        var items = parseLines($('.q-vitems', el).value);
+        if (items.length) variant = { label: $('.q-vlabel', el).value.trim() || 'Pilih jenis *', placeholder: $('.q-vph', el).value.trim() || 'Pilih...', items: items };
+      }
+      if (isNew) {
+        var old = qCfg.products.filter(function (p) { return p.name === name; })[0] || {};
+        cfg.products.push({ name: name, label: old.label || name, category: cat, specs: changedSpecs || old.specs ? specs : null, variant: variant, search: old.search !== false });
+        return;
+      }
+      if (!$('.q-show', el).checked) cfg.hidden.push(name);
+      var ov = {}, baseVar = qBase.VARIANTS[name] || null;
+      if (changedSpecs) ov.specs = specs;
+      if (JSON.stringify(variant) !== JSON.stringify(baseVar)) ov.variant = variant || false;
+      if (ov.specs || ov.variant !== undefined) cfg.overrides[name] = ov;
+    });
+    setConfig('quote', cfg).then(function () { qCfg = cfg; toast('Form penawaran tersimpan'); }).catch(fail);
+  });
+
+  /* ------------------------------ LOWONGAN KARIR ------------------------------ */
+  var JOB_COLORS = { sky: ['#e0f2fe', '#0369a1', 'Biru'], emerald: ['#d1fae5', '#047857', 'Hijau'], purple: ['#f3e8ff', '#7e22ce', 'Ungu'], amber: ['#fef3c7', '#b45309', 'Oranye'], rose: ['#ffe4e6', '#be123c', 'Merah'], slate: ['#e2e8f0', '#334155', 'Abu-abu'] };
+  var SEED_JOBS = [
+    { title: 'Teknisi Stasiun Pengisian (Filling Station Operator)', category: 'PABRIK & OPERASIONAL', color: 'sky', location: 'Safe N Lock Sidoarjo',
+      description: 'Mengoperasikan sistem manifold pengisian gas silinder Oksigen, Nitrogen, Argon, dan CO2, melakukan pengecekan visual kondisi tabung, serta memastikan prosedur keselamatan K3 bejana bertekanan terpenuhi.',
+      detail1: 'Status: Full-Time', detail2: 'Pendidikan: SMK/D3 Teknik Mesin/Elektro', apply_role: 'Teknisi Filling Station Operator' },
+    { title: 'Pengemudi Armada Pengiriman (Delivery Service Driver B1/B2)', category: 'LOGISTIK & DISTRIBUSI', color: 'emerald', location: 'Wilayah Jawa Timur (Base: Sidoarjo)',
+      description: 'Menghantarkan tabung gas industri dan tabung medis secara terjadwal dan aman ke klien rumah sakit, industri pabrik, bengkel, serta pengiriman langsung ke rumah (homecare) wilayah Jawa Timur.',
+      detail1: 'Status: Full-Time', detail2: 'Syarat: SIM B1 / B2 Umum Aktif', apply_role: 'Delivery Service Driver Jawa Timur' },
+    { title: 'Teknisi Gas Piping System & Nitrogen Purging', category: 'REKAYASA PIPA', color: 'purple', location: 'Project Base Jawa Timur',
+      description: 'Melakukan penyambungan brazing pipa tembaga medis RS, instalasi manifold gas sentral industri, serta prosedur pembersihan pipa (purging) dengan gas Nitrogen bertekanan tinggi.',
+      detail1: 'Status: Full-Time / Kontrak Proyek', detail2: 'Pengalaman: Min. 1 Tahun di Pemipaan', apply_role: 'Teknisi Gas Piping System & Purging' }
+  ];
+  var jobs = [], jobsManaged = false, jobEditId = null, jobsReady = false;
+
+  function initJobs() {
+    $('#jf-color').innerHTML = Object.keys(JOB_COLORS).map(function (k) { return '<option value="' + k + '">' + JOB_COLORS[k][2] + '</option>'; }).join('');
+    $('#job-add').addEventListener('click', function () { openJobModal(null); });
+    $('#job-close').addEventListener('click', closeJobModal);
+    $('#job-cancel').addEventListener('click', closeJobModal);
+    $('#job-modal').addEventListener('click', function (e) { if (e.target === $('#job-modal')) closeJobModal(); });
+    $('#job-form').addEventListener('submit', function (e) { e.preventDefault(); saveJob(); });
+    $('#job-list').addEventListener('click', onJobClick);
+    $('#job-banner').addEventListener('click', onJobBanner);
+    loadJobs();
+  }
+  function loadJobs() {
+    Promise.all([
+      sb.from('job_openings').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true }),
+      getConfig('careers')
+    ]).then(function (r) {
+      if (r[0].error) {
+        var m = String(r[0].error.message || '');
+        if (r[0].error.code === '42P01' || /job_openings|schema cache/i.test(m)) {
+          $('#job-banner').innerHTML = '<div class="card p-4 border-amber-300 bg-amber-50 text-sm text-amber-900"><b>Tabel lowongan belum dibuat di Supabase.</b><br>Buka Supabase → SQL Editor → New query, tempel isi file <code>supabase/tambah_lowongan.sql</code>, lalu klik Run. Setelah itu muat ulang halaman admin ini.</div>';
+          $('#job-list').innerHTML = ''; $('#job-add').disabled = true; return;
+        }
+        throw r[0].error;
+      }
+      jobs = r[0].data || []; jobsManaged = !!(r[1] && r[1].managed); jobsReady = true; $('#job-add').disabled = false;
+      renderJobs();
+    }).catch(fail);
+  }
+  function renderJobs() {
+    var b = $('#job-banner'), act = jobs.filter(function (j) { return j.is_active; }).length;
+    if (!jobsManaged) {
+      b.innerHTML = '<div class="card p-4 border-amber-300 bg-amber-50 text-sm text-amber-900"><b>Halaman Karir masih memakai 3 lowongan bawaan dari file website</b> (belum diatur dari admin).' +
+        '<div class="flex flex-wrap gap-2 mt-3">' +
+        (jobs.length ? '<button class="btn btn-primary" data-jb="activate">Mulai atur dari admin</button>' :
+          '<button class="btn btn-primary" data-jb="seed">Impor 3 lowongan bawaan (lalu bisa diedit)</button><button class="btn btn-ghost" data-jb="empty">Mulai dari kosong</button>') + '</div></div>';
+    } else {
+      b.innerHTML = '<div class="card p-3 border-emerald-300 bg-emerald-50 text-xs text-emerald-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-check"></i> Halaman Karir mengikuti daftar di bawah. <b>' + act + '</b> lowongan tayang' + (act ? '.' : ' — pengunjung melihat pesan "belum ada lowongan" dan tombol Talent Pool.') + '</span><button class="underline font-semibold" data-jb="unmanage">Kembali ke tampilan bawaan</button></div>';
+    }
+    var list = $('#job-list');
+    if (!jobs.length) { list.innerHTML = '<div class="card p-6 text-sm text-slate-500">Belum ada lowongan di daftar.</div>'; return; }
+    list.innerHTML = jobs.map(function (j, i) {
+      var c = JOB_COLORS[j.color] || JOB_COLORS.sky;
+      return '<div class="card p-4 ' + (j.is_active ? '' : 'opacity-60') + '" data-id="' + j.id + '"><div class="flex flex-wrap items-start justify-between gap-3"><div class="min-w-0 flex-1">' +
+        '<div class="flex flex-wrap items-center gap-2 mb-1">' + (j.category ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(j.category) + '</span>' : '') +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded ' + (j.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600') + '">' + (j.is_active ? 'TAYANG' : 'DISEMBUNYIKAN') + '</span>' +
+        (j.location ? '<span class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot"></i> ' + esc(j.location) + '</span>' : '') + '</div>' +
+        '<div class="font-bold text-slate-900 text-sm">' + esc(j.title) + '</div>' +
+        (j.description ? '<p class="text-xs text-slate-600 mt-1 line-clamp-2">' + esc(j.description) + '</p>' : '') +
+        '<div class="text-[11px] text-slate-500 mt-1">' + [j.detail1, j.detail2].filter(Boolean).map(esc).join(' • ') + '</div></div>' +
+        '<div class="flex flex-wrap items-center gap-1.5">' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-ja="up" ' + (i === 0 ? 'disabled' : '') + ' title="Naik"><i class="fa-solid fa-arrow-up"></i></button>' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-ja="down" ' + (i === jobs.length - 1 ? 'disabled' : '') + ' title="Turun"><i class="fa-solid fa-arrow-down"></i></button>' +
+        '<button class="btn btn-ghost !py-1" data-ja="toggle">' + (j.is_active ? 'Sembunyikan' : 'Tayangkan') + '</button>' +
+        '<button class="btn btn-ghost !py-1" data-ja="edit"><i class="fa-solid fa-pen"></i> Edit</button>' +
+        '<button class="btn btn-danger !py-1" data-ja="del" title="Hapus"><i class="fa-solid fa-trash"></i></button></div></div></div>';
+    }).join('');
+  }
+  function markManaged() { if (jobsManaged) return Promise.resolve(); return setConfig('careers', { managed: true }).then(function () { jobsManaged = true; }); }
+  function onJobBanner(e) {
+    var b = e.target.closest('[data-jb]'); if (!b) return; var a = b.dataset.jb;
+    if (a === 'seed') {
+      b.disabled = true;
+      sb.from('job_openings').insert(SEED_JOBS.map(function (j, i) { return Object.assign({ sort_order: (i + 1) * 10, is_active: true }, j); }))
+        .then(function (r) { if (r.error) throw r.error; return markManaged(); }).then(function () { toast('3 lowongan diimpor'); loadJobs(); }).catch(function (x) { b.disabled = false; fail(x); });
+    } else if (a === 'empty' || a === 'activate') {
+      markManaged().then(function () { toast('Halaman Karir sekarang diatur dari admin'); renderJobs(); }).catch(fail);
+    } else if (a === 'unmanage') {
+      if (!confirm('Kembali memakai 3 lowongan bawaan di file website? Daftar di admin tidak dihapus, hanya tidak dipakai.')) return;
+      setConfig('careers', { managed: false }).then(function () { jobsManaged = false; toast('Kembali ke tampilan bawaan'); renderJobs(); }).catch(fail);
+    }
+  }
+  function onJobClick(e) {
+    var b = e.target.closest('[data-ja]'); if (!b || b.disabled) return;
+    var card = b.closest('[data-id]'), id = Number(card.dataset.id), idx = jobs.findIndex(function (j) { return j.id === id; }), j = jobs[idx], a = b.dataset.ja;
+    if (a === 'edit') openJobModal(j);
+    else if (a === 'toggle') sb.from('job_openings').update({ is_active: !j.is_active }).eq('id', id).then(function (r) { if (r.error) throw r.error; return markManaged(); }).then(function () { toast(j.is_active ? 'Lowongan disembunyikan' : 'Lowongan ditayangkan'); loadJobs(); }).catch(fail);
+    else if (a === 'del') { if (confirm('Hapus lowongan "' + j.title + '" permanen?')) sb.from('job_openings').delete().eq('id', id).then(function (r) { if (r.error) throw r.error; return markManaged(); }).then(function () { toast('Lowongan dihapus'); loadJobs(); }).catch(fail); }
+    else if (a === 'up' || a === 'down') {
+      var k = a === 'up' ? idx - 1 : idx + 1; if (k < 0 || k >= jobs.length) return;
+      var arr = jobs.slice(); var t = arr[idx]; arr[idx] = arr[k]; arr[k] = t;
+      Promise.all(arr.map(function (x, i) { return sb.from('job_openings').update({ sort_order: (i + 1) * 10 }).eq('id', x.id); }))
+        .then(function () { return markManaged(); }).then(loadJobs).catch(fail);
+    }
+  }
+  function openJobModal(j) {
+    jobEditId = j ? j.id : null; var en = (j && j.en) || {};
+    $('#job-modal-title').textContent = j ? 'Edit lowongan' : 'Tambah lowongan';
+    var v = { title: j && j.title, category: j && j.category, color: (j && j.color) || 'sky', location: j && j.location, desc: j && j.description, d1: j && j.detail1, d2: j && j.detail2, role: j && j.apply_role };
+    $('#jf-title').value = v.title || ''; $('#jf-category').value = v.category || ''; $('#jf-color').value = v.color; $('#jf-location').value = v.location || '';
+    $('#jf-desc').value = v.desc || ''; $('#jf-d1').value = v.d1 || ''; $('#jf-d2').value = v.d2 || ''; $('#jf-role').value = v.role || '';
+    $('#jf-active').checked = j ? !!j.is_active : true;
+    $('#jf-en-title').value = en.title || ''; $('#jf-en-category').value = en.category || ''; $('#jf-en-location').value = en.location || '';
+    $('#jf-en-desc').value = en.description || ''; $('#jf-en-d1').value = en.detail1 || ''; $('#jf-en-d2').value = en.detail2 || '';
+    $('#job-modal').classList.remove('hidden');
+  }
+  function closeJobModal() { $('#job-modal').classList.add('hidden'); }
+  function saveJob() {
+    var title = $('#jf-title').value.trim(); if (!title) return;
+    var row = {
+      title: title, category: $('#jf-category').value.trim() || null, color: $('#jf-color').value, location: $('#jf-location').value.trim() || null,
+      description: $('#jf-desc').value.trim() || null, detail1: $('#jf-d1').value.trim() || null, detail2: $('#jf-d2').value.trim() || null,
+      apply_role: $('#jf-role').value.trim() || null, is_active: $('#jf-active').checked,
+      en: { title: $('#jf-en-title').value.trim(), category: $('#jf-en-category').value.trim(), location: $('#jf-en-location').value.trim(), description: $('#jf-en-desc').value.trim(), detail1: $('#jf-en-d1').value.trim(), detail2: $('#jf-en-d2').value.trim() }
+    };
+    var q;
+    if (jobEditId) q = sb.from('job_openings').update(row).eq('id', jobEditId);
+    else { row.sort_order = (jobs.reduce(function (m, j) { return Math.max(m, j.sort_order || 0); }, 0)) + 10; q = sb.from('job_openings').insert([row]); }
+    q.then(function (r) { if (r.error) throw r.error; return markManaged(); }).then(function () { closeJobModal(); toast('Lowongan tersimpan'); loadJobs(); }).catch(fail);
+  }
+
+
+  /* ------------------------------ MEDIA (UNGGAH GAMBAR) ------------------------------ */
+  function viaImg(file) { return new Promise(function (res, rej) { var u = URL.createObjectURL(file), i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { rej(new Error('File bukan gambar yang valid')); }; i.src = u; }); }
+  function resizeImage(file, maxEdge, png) {
+    var get = window.createImageBitmap ? createImageBitmap(file).catch(function () { return viaImg(file); }) : viaImg(file);
+    return get.then(function (bm) {
+      var w = bm.width || bm.naturalWidth, h = bm.height || bm.naturalHeight, k = Math.min(1, maxEdge / Math.max(w, h));
+      var cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(w * k)); cv.height = Math.max(1, Math.round(h * k));
+      var cx = cv.getContext('2d'); if (!png) { cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); }
+      cx.drawImage(bm, 0, 0, cv.width, cv.height);
+      return new Promise(function (res, rej) { cv.toBlob(function (b) { b ? res(b) : rej(new Error('Gagal memproses gambar')); }, png ? 'image/png' : 'image/jpeg', 0.82); });
+    });
+  }
+  function uploadMedia(file, maxEdge, png) {
+    if (!/^image\//.test(file.type)) return Promise.reject(new Error('File harus berupa gambar (JPG / PNG / WebP)'));
+    if (file.size > 30 * 1024 * 1024) return Promise.reject(new Error('Ukuran file terlalu besar (maksimal 30 MB)'));
+    var raw = /svg|gif/.test(file.type);
+    return (raw ? Promise.resolve(file) : resizeImage(file, maxEdge || 1920, png)).then(function (blob) {
+      var ext = raw ? (file.type.indexOf('svg') > 0 ? 'svg' : 'gif') : (png ? 'png' : 'jpg');
+      var base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'gambar';
+      var path = Date.now() + '-' + base + '.' + ext;
+      return sb.storage.from('site-media').upload(path, blob, { cacheControl: '31536000', upsert: false, contentType: blob.type || file.type }).then(function (r) {
+        if (r.error) throw r.error;
+        return sb.storage.from('site-media').getPublicUrl(path).data.publicUrl;
+      });
+    });
+  }
+
+  /* ------------------------------ GALERI KEGIATAN ------------------------------ */
+  var acs = [], acEditId = null, acGal = [];
+  function initActivity() {
+    $('#ac-add').addEventListener('click', function () { openAcModal(null); });
+    $('#ac-close').addEventListener('click', closeAcModal);
+    $('#ac-cancel').addEventListener('click', closeAcModal);
+    $('#ac-modal').addEventListener('click', function (e) { if (e.target === $('#ac-modal')) closeAcModal(); });
+    $('#ac-form').addEventListener('submit', function (e) { e.preventDefault(); saveAc(); });
+    $('#ac-list').addEventListener('click', onAcClick);
+    $('#ac-img').addEventListener('input', function () { setAcPrev($('#ac-img').value.trim()); });
+    $('#ac-file').addEventListener('change', function () {
+      var f = this.files[0]; this.value = ''; if (!f) return;
+      var b = $('#ac-save'); b.disabled = true; toast('Mengunggah foto…');
+      uploadMedia(f, 1600, false).then(function (u) { $('#ac-img').value = u; setAcPrev(u); toast('Foto terunggah'); }).catch(fail).then(function () { b.disabled = false; });
+    });
+    $('#ac-gal').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-gx]'); if (!b) return; var i = Number(b.closest('[data-gi]').dataset.gi), a = b.dataset.gx;
+      if (a === 'del') acGal.splice(i, 1);
+      else { var k = a === 'left' ? i - 1 : i + 1; if (k < 0 || k >= acGal.length) return; var t = acGal[i]; acGal[i] = acGal[k]; acGal[k] = t; }
+      drawAcGal();
+    });
+    $('#ac-gal-file').addEventListener('change', function () {
+      var fs = [].slice.call(this.files); this.value = ''; if (!fs.length) return;
+      var sv = $('#ac-save'); sv.disabled = true; var n = 0; toast('Mengunggah ' + fs.length + ' foto…');
+      fs.reduce(function (pr, f) { return pr.then(function () { return uploadMedia(f, 1600, false).then(function (u) { acGal.push(u); n++; drawAcGal(); }); }); }, Promise.resolve())
+        .then(function () { toast(n + ' foto ditambahkan'); }).catch(fail).then(function () { sv.disabled = false; });
+    });
+    loadAc();
+  }
+  function drawAcGal() {
+    $('#ac-gal-n').textContent = acGal.length ? '(' + acGal.length + ' foto)' : '(belum ada, boleh dikosongkan)';
+    $('#ac-gal').innerHTML = acGal.map(function (u, i) {
+      return '<div class="relative h-20 rounded-lg overflow-hidden bg-slate-100 border border-slate-200" data-gi="' + i + '"><img src="' + esc(u) + '" class="w-full h-full object-cover" alt="">' +
+        '<div class="absolute inset-x-0 bottom-0 flex justify-between bg-black/55 text-white text-xs">' +
+        '<button type="button" class="px-2 py-0.5" data-gx="left" title="Geser ke kiri">‹</button><button type="button" class="px-2 py-0.5" data-gx="del" title="Hapus foto">✕</button><button type="button" class="px-2 py-0.5" data-gx="right" title="Geser ke kanan">›</button></div></div>';
+    }).join('');
+  }
+  function setAcPrev(u) { var i = $('#ac-prev'); if (u) { i.src = u; i.classList.remove('hidden'); $('#ac-prev-ic').classList.add('hidden'); } else { i.removeAttribute('src'); i.classList.add('hidden'); $('#ac-prev-ic').classList.remove('hidden'); } }
+  function loadAc() {
+    sb.from('gallery_items').select('*').order('sort_order', { ascending: true }).order('id', { ascending: false }).then(function (r) {
+      if (r.error) {
+        var m = String(r.error.message || '');
+        if (r.error.code === '42P01' || /gallery_items|schema cache/i.test(m)) {
+          $('#ac-banner').innerHTML = '<div class="card p-4 border-amber-300 bg-amber-50 text-sm text-amber-900"><b>Tabel galeri kegiatan belum dibuat di Supabase.</b><br>Buka Supabase → SQL Editor → New query, tempel isi file <code>supabase/tambah_galeri_kegiatan.sql</code>, lalu klik Run. Setelah itu muat ulang halaman admin ini.</div>';
+          $('#ac-list').innerHTML = ''; $('#ac-add').disabled = true; return;
+        }
+        throw r.error;
+      }
+      acs = r.data || []; $('#ac-banner').innerHTML = ''; $('#ac-add').disabled = false; renderAc();
+    }).catch(fail);
+  }
+  function renderAc() {
+    var list = $('#ac-list');
+    if (!acs.length) { list.innerHTML = '<div class="card p-6 text-sm text-slate-500">Belum ada kegiatan. Klik <b>Tambah kegiatan</b> untuk mengisi galeri. Selama kosong, pengunjung melihat pesan "Oops, sepertinya belum ada kegiatan yang dipost di sini".</div>'; return; }
+    list.innerHTML = acs.map(function (p, i) {
+      var n = (p.photos || []).length + (p.image_url ? 1 : 0);
+      return '<div class="card p-3 ' + (p.is_active ? '' : 'opacity-60') + '" data-id="' + p.id + '"><div class="flex flex-wrap items-start justify-between gap-3">' +
+        '<div class="w-24 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0">' + (p.image_url ? '<img src="' + esc(p.image_url) + '" class="w-full h-full object-cover" alt="" loading="lazy">' : '') + '</div>' +
+        '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2 mb-1">' +
+        (p.event_date ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">' + esc(p.event_date) + '</span>' : '') +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-100 text-sky-700">' + n + ' FOTO</span>' +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded ' + (p.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600') + '">' + (p.is_active ? 'TAYANG' : 'DISEMBUNYIKAN') + '</span></div>' +
+        '<div class="font-bold text-slate-900 text-sm">' + esc(p.title) + '</div>' +
+        '<div class="text-[11px] text-slate-500 mt-0.5 line-clamp-2">' + esc(p.description || '') + '</div></div>' +
+        '<div class="flex flex-wrap items-center gap-1.5">' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-pa="up" ' + (i === 0 ? 'disabled' : '') + ' title="Naik"><i class="fa-solid fa-arrow-up"></i></button>' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-pa="down" ' + (i === acs.length - 1 ? 'disabled' : '') + ' title="Turun"><i class="fa-solid fa-arrow-down"></i></button>' +
+        '<button class="btn btn-ghost !py-1" data-pa="toggle">' + (p.is_active ? 'Sembunyikan' : 'Tayangkan') + '</button>' +
+        '<button class="btn btn-ghost !py-1" data-pa="edit"><i class="fa-solid fa-pen"></i> Edit</button>' +
+        '<button class="btn btn-danger !py-1" data-pa="del" title="Hapus"><i class="fa-solid fa-trash"></i></button></div></div></div>';
+    }).join('');
+  }
+  function onAcClick(e) {
+    var b = e.target.closest('[data-pa]'); if (!b || b.disabled) return;
+    var card = b.closest('[data-id]'), id = Number(card.dataset.id), idx = acs.findIndex(function (j) { return j.id === id; }), p = acs[idx], a = b.dataset.pa;
+    if (a === 'edit') openAcModal(p);
+    else if (a === 'toggle') sb.from('gallery_items').update({ is_active: !p.is_active }).eq('id', id).then(function (r) { if (r.error) throw r.error; toast(p.is_active ? 'Kegiatan disembunyikan' : 'Kegiatan ditayangkan'); loadAc(); }).catch(fail);
+    else if (a === 'del') { if (confirm('Hapus kegiatan "' + p.title + '" permanen?')) sb.from('gallery_items').delete().eq('id', id).then(function (r) { if (r.error) throw r.error; toast('Kegiatan dihapus'); loadAc(); }).catch(fail); }
+    else if (a === 'up' || a === 'down') {
+      var k = a === 'up' ? idx - 1 : idx + 1; if (k < 0 || k >= acs.length) return;
+      var arr = acs.slice(); var t = arr[idx]; arr[idx] = arr[k]; arr[k] = t;
+      Promise.all(arr.map(function (x, i) { return sb.from('gallery_items').update({ sort_order: (i + 1) * 10 }).eq('id', x.id); })).then(loadAc).catch(fail);
+    }
+  }
+  function openAcModal(p) {
+    acEditId = p ? p.id : null; var en = (p && p.en) || {};
+    $('#ac-modal-title').textContent = p ? 'Edit kegiatan' : 'Tambah kegiatan';
+    $('#ac-title').value = (p && p.title) || ''; $('#ac-date').value = (p && p.event_date) || ''; $('#ac-desc').value = (p && p.description) || '';
+    $('#ac-img').value = (p && p.image_url) || ''; setAcPrev((p && p.image_url) || ''); $('#ac-active').checked = p ? !!p.is_active : true;
+    $('#ac-en-title').value = en.title || ''; $('#ac-en-description').value = en.description || '';
+    acGal = ((p && p.photos) || []).slice(); drawAcGal();
+    $('#ac-modal').classList.remove('hidden');
+  }
+  function closeAcModal() { $('#ac-modal').classList.add('hidden'); }
+  function saveAc() {
+    var title = $('#ac-title').value.trim(); if (!title) return;
+    var v = function (s) { return $(s).value.trim() || null; };
+    var row = { title: title, event_date: v('#ac-date'), description: v('#ac-desc'), image_url: v('#ac-img'), photos: acGal.slice(), is_active: $('#ac-active').checked,
+      en: { title: $('#ac-en-title').value.trim(), description: $('#ac-en-description').value.trim() } };
+    var q;
+    if (acEditId) q = sb.from('gallery_items').update(row).eq('id', acEditId);
+    else { row.sort_order = acs.reduce(function (m, j) { return Math.min(m, j.sort_order || 0); }, 10) - 10; q = sb.from('gallery_items').insert([row]); }
+    q.then(function (r) { if (r.error) throw r.error; closeAcModal(); toast('Kegiatan tersimpan'); loadAc(); }).catch(fail);
+  }
+
+  /* ------------------------------ PORTOFOLIO ------------------------------ */
+  var PF_BADGE = { navy: ['#0A192F', 'Biru tua'], sky: ['#0284c7', 'Biru muda'], emerald: ['#047857', 'Hijau'], amber: ['#b45309', 'Oranye'], rose: ['#be123c', 'Merah'], slate: ['#334155', 'Abu-abu'] };
+  var PF_TXT = { emerald: ['#059669', 'Hijau'], sky: ['#0284c7', 'Biru'], amber: ['#d97706', 'Oranye'], rose: ['#e11d48', 'Merah'], slate: ['#475569', 'Abu-abu'], navy: ['#0A192F', 'Biru tua'] };
+  var PF_CAT = { medis: 'Medis & Rumah Sakit', kriogenik: 'Filling Station & Dewars', industri: 'Industri & Fabrikasi Baja', lainnya: 'Lainnya' };
+  var pfFilters = [];   // filter tambahan: [{ key, label, en }]
+  function pfCatLabel(k) { if (PF_CAT[k]) return PF_CAT[k]; var f = pfFilters.filter(function (x) { return x.key === k; })[0]; return f ? f.label : (k || ''); }
+  function fillPfCat(sel) {
+    var opts = [['medis', PF_CAT.medis], ['kriogenik', PF_CAT.kriogenik], ['industri', PF_CAT.industri]].concat(pfFilters.map(function (f) { return [f.key, f.label]; })).concat([['lainnya', 'Lainnya']]);
+    if (sel && !opts.some(function (o) { return o[0] === sel; })) opts.splice(opts.length - 1, 0, [sel, sel]);
+    $('#pf-cat').innerHTML = opts.map(function (o) { return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + '</option>'; }).join('');
+  }
+  function pfSaveCfg() { return setConfig('portfolio', { managed: pfManaged, filters: pfFilters }); }
+  function drawPfFilters() {
+    var fixed = [PF_CAT.medis, PF_CAT.kriogenik, PF_CAT.industri].map(function (l) { return '<span class="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600">' + esc(l) + '</span>'; });
+    var custom = pfFilters.map(function (f, i) { return '<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-xs font-semibold text-sky-800">' + esc(f.label) + (f.en ? ' <span class="text-sky-500 font-normal">/ ' + esc(f.en) + '</span>' : '') + '<button type="button" data-pff="' + i + '" class="text-sky-500 hover:text-red-600 leading-none" title="Hapus filter">&times;</button></span>'; });
+    var last = '<span class="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600">Lainnya</span>';
+    $('#pf-filters').innerHTML = fixed.concat(custom, [last]).join('');
+  }
+  function initPfFilters() {
+    $('#pff-add').addEventListener('click', function () {
+      var name = $('#pff-name').value.trim(); if (!name) { toast('Isi nama filter dulu'); return; }
+      if (name.toLowerCase() === 'lainnya' || Object.keys(PF_CAT).some(function (k) { return PF_CAT[k].toLowerCase() === name.toLowerCase(); }) || pfFilters.some(function (f) { return f.label.toLowerCase() === name.toLowerCase(); })) { toast('Nama filter itu sudah ada'); return; }
+      var base = 'f-' + (name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'x'), key = base, n = 2;
+      while (pfFilters.some(function (f) { return f.key === key; })) key = base + '-' + (n++);
+      pfFilters.push({ key: key, label: name, en: $('#pff-en').value.trim() });
+      pfSaveCfg().then(function () { $('#pff-name').value = ''; $('#pff-en').value = ''; toast('Filter ditambahkan'); drawPfFilters(); fillPfCat(); renderPf(); }).catch(function (x) { pfFilters.pop(); fail(x); });
+    });
+    $('#pf-filters').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pff]'); if (!b) return; var f = pfFilters[Number(b.dataset.pff)]; if (!f) return;
+      var used = pfs.filter(function (p) { return p.category === f.key; });
+      if (!confirm('Hapus filter "' + f.label + '"?' + (used.length ? '\n' + used.length + ' proyek di filter ini akan dipindah ke "Lainnya".' : ''))) return;
+      var prev = pfFilters.slice(); pfFilters = pfFilters.filter(function (x) { return x.key !== f.key; });
+      Promise.all(used.map(function (p) { return sb.from('portfolio_items').update({ category: 'lainnya' }).eq('id', p.id); })).then(pfSaveCfg)
+        .then(function () { toast('Filter dihapus'); drawPfFilters(); fillPfCat(); loadPf(); }).catch(function (x) { pfFilters = prev; fail(x); });
+    });
+  }
+  var SEED_PF = [{"category": "medis", "image_url": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80", "image_alt": "Instalasi Gas Medis RS Surabaya - Sidoarjo", "badge": "INSTALASI MEDIS", "badge_color": "navy", "location": "Surabaya & Sidoarjo", "status": "Aktif Beroperasi", "status_color": "emerald", "title": "Pemasangan Gas Piping System & Suplai Oksigen Medis", "description": "Instalasi pipa tembaga seamless degreased, manifold changeover otomatis, serta pengiriman rutin tabung 6 m³ untuk fasilitas rawat inap, ICU, dan instalasi gawat darurat.", "foot_left": "Layanan: Piping & Delivery", "foot_right": "100% On-Time", "foot_color": "emerald"}, {"category": "kriogenik", "image_url": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80", "image_alt": "Modernisasi Stasiun Pengisian Filling Station Safe N Lock Sidoarjo", "badge": "SAFE N LOCK SIDOARJO", "badge_color": "sky", "location": "Kawasan Safe N Lock Blok K", "status": "Stasiun Pengisian Utama", "status_color": "sky", "title": "Filling Station Modern Berstandar K3", "description": "Fasilitas stasiun pengisian otomatis modern milik PT. Candi Oxygen di Sidoarjo yang melayani pengisian O2, N2, Argon, CO2, serta perawatan tabung berstandar K3.", "foot_left": "Fasilitas: Filling Station", "foot_right": "Auto-Vacuum", "foot_color": "sky"}, {"category": "industri", "image_url": "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80", "image_alt": "Fabrikasi Baja dan Pengelasan Presisi Gresik & Pasuruan", "badge": "INDUSTRI & GALANGAN", "badge_color": "navy", "location": "Kawasan Industri Gresik & Pasuruan", "status": "Pasokan Kontrak", "status_color": "sky", "title": "Suplai Argon, Mixed Gases & Purging Nitrogen Galangan", "description": "Penyediaan pasokan gas Argon High Purity dan Gas Campuran dalam paket rak cradle silinder 16 tabung serta layanan purging pipelines Nitrogen untuk proyek galangan & pabrik baja.", "foot_left": "Produk: Argon, Mixed, Purging", "foot_right": "Cradle System", "foot_color": "sky"}, {"category": "industri", "image_url": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80", "image_alt": "Nitrogen Liquid Pembekuan Cepat Makanan Mojokerto", "badge": "FOOD & BEVERAGE", "badge_color": "navy", "location": "Mojokerto & Malang", "status": "Food Grade", "status_color": "emerald", "title": "Penyediaan Liquid Nitrogen & CO2 Pembekuan Makanan", "description": "Pasokan teratur Nitrogen Cair dalam tabung cryogenic dewar serta gas CO2 food grade untuk industri pengemasan makanan beku, minuman berkarbonasi, dan modified atmosphere packaging.", "foot_left": "Format: Cryogenic Dewars", "foot_right": "Higienis & Bersertifikat", "foot_color": "emerald"}, {"category": "medis", "image_url": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80", "image_alt": "Pasokan Oksigen Rumah Sakit & Homecare Jawa Timur", "badge": "HOMECARE & KLINIK", "badge_color": "sky", "location": "Jawa Timur Raya", "status": "Respon Tanggap", "status_color": "emerald", "title": "Armada Pengiriman Oksigen Medis Homecare & Regulator", "description": "Layanan cepat tanggap antar tabung oksigen medis 1 m³ dan 6 m³ lengkap dengan regulator medis berstandar, trolley silinder, dan pengujian kebocoran untuk pemulihan pasien di rumah.", "foot_left": "Layanan: Homecare Delivery", "foot_right": "Siap Kirim", "foot_color": "emerald"}, {"category": "kriogenik", "image_url": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80", "image_alt": "Purging Pipelines with Nitrogen di Pabrik Petrokimia", "badge": "PURGING PIPELINE", "badge_color": "navy", "location": "Zona Industri Petrokimia", "status": "Sertifikasi Migas/K3", "status_color": "sky", "title": "Pembersihan & Inerting Jaringan Pipa dengan Nitrogen Kering", "description": "Jasa pengurasan pipa (purging) menggunakan gas Nitrogen bertekanan tinggi untuk menghilangkan uap hidrokarbon, kelembaban, dan oksigen sebelum proses re-commissioning pabrik kimia.", "foot_left": "Teknologi: High Pressure N2", "foot_right": "Zero Spark Risk", "foot_color": "sky"}];
+  var pfs = [], pfManaged = false, pfEditId = null, pfReady = false, pfGal = [];
+
+  function fillColor(sel, map) { $(sel).innerHTML = Object.keys(map).map(function (k) { return '<option value="' + k + '">' + map[k][1] + '</option>'; }).join(''); }
+  function initPortfolio() {
+    initPfFilters(); fillPfCat();
+    fillColor('#pf-badge-color', PF_BADGE); fillColor('#pf-status-color', PF_TXT); fillColor('#pf-foot-color', PF_TXT);
+    $('#pf-add').addEventListener('click', function () { openPfModal(null); });
+    $('#pf-close').addEventListener('click', closePfModal);
+    $('#pf-cancel').addEventListener('click', closePfModal);
+    $('#pf-modal').addEventListener('click', function (e) { if (e.target === $('#pf-modal')) closePfModal(); });
+    $('#pf-form').addEventListener('submit', function (e) { e.preventDefault(); savePf(); });
+    $('#pf-list').addEventListener('click', onPfClick);
+    $('#pf-banner').addEventListener('click', onPfBanner);
+    $('#pf-img').addEventListener('input', function () { setPfPrev($('#pf-img').value.trim()); });
+    $('#pf-file').addEventListener('change', function () {
+      var f = this.files[0]; this.value = ''; if (!f) return;
+      var b = $('#pf-save'); b.disabled = true; toast('Mengunggah foto…');
+      uploadMedia(f, 1400, false).then(function (u) { $('#pf-img').value = u; setPfPrev(u); toast('Foto terunggah'); }).catch(fail).then(function () { b.disabled = false; });
+    });
+    $('#pf-gal').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-gx]'); if (!b) return; var i = Number(b.closest('[data-gi]').dataset.gi), a = b.dataset.gx;
+      if (a === 'del') pfGal.splice(i, 1);
+      else { var k = a === 'left' ? i - 1 : i + 1; if (k < 0 || k >= pfGal.length) return; var t = pfGal[i]; pfGal[i] = pfGal[k]; pfGal[k] = t; }
+      drawPfGal();
+    });
+    $('#pf-gal-file').addEventListener('change', function () {
+      var fs = [].slice.call(this.files); this.value = ''; if (!fs.length) return;
+      var sv = $('#pf-save'); sv.disabled = true; var n = 0; toast('Mengunggah ' + fs.length + ' foto…');
+      fs.reduce(function (pr, f) { return pr.then(function () { return uploadMedia(f, 1600, false).then(function (u) { pfGal.push(u); n++; drawPfGal(); }); }); }, Promise.resolve())
+        .then(function () { toast(n + ' foto ditambahkan'); }).catch(fail).then(function () { sv.disabled = false; });
+    });
+    loadPf();
+  }
+  function drawPfGal() {
+    $('#pf-gal-n').textContent = pfGal.length ? '(' + pfGal.length + ' foto)' : '(belum ada)';
+    $('#pf-gal').innerHTML = pfGal.map(function (u, i) {
+      return '<div class="relative h-20 rounded-lg overflow-hidden bg-slate-100 border border-slate-200" data-gi="' + i + '"><img src="' + esc(u) + '" class="w-full h-full object-cover" alt="">' +
+        '<div class="absolute inset-x-0 bottom-0 flex justify-between bg-black/55 text-white text-xs">' +
+        '<button type="button" class="px-2 py-0.5" data-gx="left" title="Geser ke kiri">‹</button><button type="button" class="px-2 py-0.5" data-gx="del" title="Hapus foto">✕</button><button type="button" class="px-2 py-0.5" data-gx="right" title="Geser ke kanan">›</button></div></div>';
+    }).join('');
+  }
+  function setPfPrev(u) { var i = $('#pf-prev'); if (u) { i.src = u; i.classList.remove('hidden'); $('#pf-prev-ic').classList.add('hidden'); } else { i.removeAttribute('src'); i.classList.add('hidden'); $('#pf-prev-ic').classList.remove('hidden'); } }
+  function loadPf() {
+    Promise.all([
+      sb.from('portfolio_items').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true }),
+      getConfig('portfolio')
+    ]).then(function (r) {
+      if (r[0].error) {
+        var m = String(r[0].error.message || '');
+        if (r[0].error.code === '42P01' || /portfolio_items|schema cache/i.test(m)) {
+          $('#pf-banner').innerHTML = '<div class="card p-4 border-amber-300 bg-amber-50 text-sm text-amber-900"><b>Tabel portofolio belum dibuat di Supabase.</b><br>Buka Supabase → SQL Editor → New query, tempel isi file <code>supabase/tambah_portofolio.sql</code>, lalu klik Run. Setelah itu muat ulang halaman admin ini.</div>';
+          $('#pf-list').innerHTML = ''; $('#pf-add').disabled = true; return;
+        }
+        throw r[0].error;
+      }
+      pfs = r[0].data || []; pfManaged = !!(r[1] && r[1].managed); pfFilters = (r[1] && Array.isArray(r[1].filters)) ? r[1].filters : []; drawPfFilters(); fillPfCat(); pfReady = true; $('#pf-add').disabled = false;
+      renderPf();
+    }).catch(fail);
+  }
+  function renderPf() {
+    var b = $('#pf-banner'), act = pfs.filter(function (j) { return j.is_active; }).length;
+    if (!pfManaged) {
+      b.innerHTML = '<div class="card p-4 border-amber-300 bg-amber-50 text-sm text-amber-900"><b>Halaman Portofolio masih memakai 6 proyek bawaan dari file website</b> (belum diatur dari admin).' +
+        '<div class="flex flex-wrap gap-2 mt-3">' +
+        (pfs.length ? '<button class="btn btn-primary" data-pb="activate">Mulai atur dari admin</button>' :
+          '<button class="btn btn-primary" data-pb="seed">Impor 6 proyek bawaan (lalu bisa diedit)</button><button class="btn btn-ghost" data-pb="empty">Mulai dari kosong</button>') + '</div></div>';
+    } else {
+      b.innerHTML = '<div class="card p-3 border-emerald-300 bg-emerald-50 text-xs text-emerald-900 flex flex-wrap items-center justify-between gap-2"><span><i class="fa-solid fa-circle-check"></i> Halaman Portofolio mengikuti daftar di bawah. <b>' + act + '</b> proyek tayang.</span><button class="underline font-semibold" data-pb="unmanage">Kembali ke tampilan bawaan</button></div>';
+    }
+    var list = $('#pf-list');
+    if (!pfs.length) { list.innerHTML = '<div class="card p-6 text-sm text-slate-500">Belum ada proyek di daftar.</div>'; return; }
+    list.innerHTML = pfs.map(function (p, i) {
+      var bc = (PF_BADGE[p.badge_color] || PF_BADGE.navy)[0];
+      return '<div class="card p-3 ' + (p.is_active ? '' : 'opacity-60') + '" data-id="' + p.id + '"><div class="flex flex-wrap items-start justify-between gap-3">' +
+        '<div class="w-24 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0">' + (p.image_url ? '<img src="' + esc(p.image_url) + '" class="w-full h-full object-cover" alt="" loading="lazy">' : '') + '</div>' +
+        '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2 mb-1">' + (p.badge ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded text-white" style="background:' + bc + '">' + esc(p.badge) + '</span>' : '') +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">' + esc(pfCatLabel(p.category)) + '</span>' +
+        (p.detail || (p.gallery && p.gallery.length) ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-100 text-sky-700">DETAIL' + (p.gallery && p.gallery.length ? ' • ' + p.gallery.length + ' FOTO' : '') + '</span>' : '') +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded ' + (p.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600') + '">' + (p.is_active ? 'TAYANG' : 'DISEMBUNYIKAN') + '</span></div>' +
+        '<div class="font-bold text-slate-900 text-sm">' + esc(p.title) + '</div>' +
+        '<div class="text-[11px] text-slate-500 mt-0.5">' + [p.location, p.status].filter(Boolean).map(esc).join(' • ') + '</div></div>' +
+        '<div class="flex flex-wrap items-center gap-1.5">' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-pa="up" ' + (i === 0 ? 'disabled' : '') + ' title="Naik"><i class="fa-solid fa-arrow-up"></i></button>' +
+        '<button class="btn btn-ghost !px-2 !py-1" data-pa="down" ' + (i === pfs.length - 1 ? 'disabled' : '') + ' title="Turun"><i class="fa-solid fa-arrow-down"></i></button>' +
+        '<button class="btn btn-ghost !py-1" data-pa="toggle">' + (p.is_active ? 'Sembunyikan' : 'Tayangkan') + '</button>' +
+        '<button class="btn btn-ghost !py-1" data-pa="edit"><i class="fa-solid fa-pen"></i> Edit</button>' +
+        '<button class="btn btn-danger !py-1" data-pa="del" title="Hapus"><i class="fa-solid fa-trash"></i></button></div></div></div>';
+    }).join('');
+  }
+  function pfMarkManaged() { if (pfManaged) return Promise.resolve(); pfManaged = true; return pfSaveCfg().catch(function (x) { pfManaged = false; throw x; }); }
+  function onPfBanner(e) {
+    var b = e.target.closest('[data-pb]'); if (!b) return; var a = b.dataset.pb;
+    if (a === 'seed') {
+      b.disabled = true;
+      sb.from('portfolio_items').insert(SEED_PF.map(function (p, i) { return Object.assign({ sort_order: (i + 1) * 10, is_active: true }, p); }))
+        .then(function (r) { if (r.error) throw r.error; return pfMarkManaged(); }).then(function () { toast('6 proyek diimpor'); loadPf(); }).catch(function (x) { b.disabled = false; fail(x); });
+    } else if (a === 'empty' || a === 'activate') {
+      pfMarkManaged().then(function () { toast('Halaman Portofolio sekarang diatur dari admin'); renderPf(); }).catch(fail);
+    } else if (a === 'unmanage') {
+      if (!confirm('Kembali memakai 6 proyek bawaan di file website? Daftar di admin tidak dihapus, hanya tidak dipakai.')) return;
+      (pfManaged = false, pfSaveCfg()).then(function () { toast('Kembali ke tampilan bawaan'); renderPf(); }).catch(fail);
+    }
+  }
+  function onPfClick(e) {
+    var b = e.target.closest('[data-pa]'); if (!b || b.disabled) return;
+    var card = b.closest('[data-id]'), id = Number(card.dataset.id), idx = pfs.findIndex(function (j) { return j.id === id; }), p = pfs[idx], a = b.dataset.pa;
+    if (a === 'edit') openPfModal(p);
+    else if (a === 'toggle') sb.from('portfolio_items').update({ is_active: !p.is_active }).eq('id', id).then(function (r) { if (r.error) throw r.error; return pfMarkManaged(); }).then(function () { toast(p.is_active ? 'Proyek disembunyikan' : 'Proyek ditayangkan'); loadPf(); }).catch(fail);
+    else if (a === 'del') { if (confirm('Hapus proyek "' + p.title + '" permanen?')) sb.from('portfolio_items').delete().eq('id', id).then(function (r) { if (r.error) throw r.error; return pfMarkManaged(); }).then(function () { toast('Proyek dihapus'); loadPf(); }).catch(fail); }
+    else if (a === 'up' || a === 'down') {
+      var k = a === 'up' ? idx - 1 : idx + 1; if (k < 0 || k >= pfs.length) return;
+      var arr = pfs.slice(); var t = arr[idx]; arr[idx] = arr[k]; arr[k] = t;
+      Promise.all(arr.map(function (x, i) { return sb.from('portfolio_items').update({ sort_order: (i + 1) * 10 }).eq('id', x.id); }))
+        .then(function () { return pfMarkManaged(); }).then(loadPf).catch(fail);
+    }
+  }
+  var PF_EN = ['title', 'badge', 'location', 'status', 'description', 'detail', 'foot_left', 'foot_right'];
+  function openPfModal(p) {
+    pfEditId = p ? p.id : null; var en = (p && p.en) || {};
+    $('#pf-modal-title').textContent = p ? 'Edit proyek' : 'Tambah proyek';
+    $('#pf-title').value = (p && p.title) || ''; fillPfCat(p && p.category); $('#pf-cat').value = (p && p.category) || 'industri'; $('#pf-badge').value = (p && p.badge) || '';
+    $('#pf-badge-color').value = (p && p.badge_color) || 'navy'; $('#pf-loc').value = (p && p.location) || ''; $('#pf-status').value = (p && p.status) || '';
+    $('#pf-status-color').value = (p && p.status_color) || 'emerald'; $('#pf-desc').value = (p && p.description) || ''; $('#pf-fl').value = (p && p.foot_left) || '';
+    $('#pf-fr').value = (p && p.foot_right) || ''; $('#pf-foot-color').value = (p && p.foot_color) || 'emerald'; $('#pf-img').value = (p && p.image_url) || '';
+    $('#pf-active').checked = p ? !!p.is_active : true; setPfPrev((p && p.image_url) || '');
+    PF_EN.forEach(function (k) { $('#pf-en-' + k).value = en[k] || ''; });
+    $('#pf-detail').value = (p && p.detail) || ''; pfGal = ((p && p.gallery) || []).slice(); drawPfGal();
+    $('#pf-modal').classList.remove('hidden');
+  }
+  function closePfModal() { $('#pf-modal').classList.add('hidden'); }
+  function savePf() {
+    var title = $('#pf-title').value.trim(); if (!title) return;
+    var v = function (s) { return $(s).value.trim() || null; };
+    var row = { title: title, category: $('#pf-cat').value, badge: v('#pf-badge'), badge_color: $('#pf-badge-color').value, location: v('#pf-loc'), status: v('#pf-status'),
+      status_color: $('#pf-status-color').value, description: v('#pf-desc'), foot_left: v('#pf-fl'), foot_right: v('#pf-fr'), foot_color: $('#pf-foot-color').value,
+      image_url: v('#pf-img'), image_alt: title, detail: v('#pf-detail'), gallery: pfGal.slice(), is_active: $('#pf-active').checked, en: {} };
+    PF_EN.forEach(function (k) { row.en[k] = $('#pf-en-' + k).value.trim(); });
+    var q;
+    if (pfEditId) q = sb.from('portfolio_items').update(row).eq('id', pfEditId);
+    else { row.sort_order = pfs.reduce(function (m, j) { return Math.max(m, j.sort_order || 0); }, 0) + 10; q = sb.from('portfolio_items').insert([row]); }
+    q.then(function (r) { if (r.error) throw r.error; return pfMarkManaged(); }).then(function () { closePfModal(); toast('Proyek tersimpan'); loadPf(); }).catch(fail);
+  }
+
+  /* ------------------------------ GALERI GAMBAR ------------------------------ */
+  var GL_PAGES = [['index.html', 'Beranda'], ['about.html', 'Tentang Kami'], ['products.html', 'Produk & Layanan'], ['portfolio.html', 'Portofolio'], ['gallery.html', 'Galeri Kegiatan'], ['career.html', 'Karir'], ['contact.html', 'Kontak'], ['quote.html', 'Penawaran']];
+  var glImgs = [], glOv = {}, glPage = '', glTarget = null;
+  function initGallery() {
+    $('#gl-refresh').addEventListener('click', loadGallery);
+    $('#gl-changed').addEventListener('change', renderGallery);
+    $('#gl-pages').addEventListener('click', function (e) { var b = e.target.closest('[data-gp]'); if (b) { glPage = b.dataset.gp; renderGallery(); } });
+    $('#gl-grid').addEventListener('click', onGlClick);
+    $('#gl-file').addEventListener('change', onGlFile);
+    loadGallery();
+  }
+  function loadGallery() {
+    $('#gl-grid').innerHTML = '<div class="text-sm text-slate-500 col-span-full">Mengumpulkan gambar dari semua halaman…</div>';
+    var base = location.href.replace(/[^/]*([?#].*)?$/, '');
+    Promise.all([
+      Promise.all(GL_PAGES.map(function (p) { return fetch(base + p[0], { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(p[0]); return r.text(); }).then(function (t) { return { page: p, doc: new DOMParser().parseFromString(t, 'text/html') }; }).catch(function () { return null; }); })),
+      sb.from('site_content').select('key,value_id').eq('kind', 'img').eq('scope', '')
+    ]).then(function (r) {
+      if (r[1].error) throw r[1].error;
+      glOv = {}; (r[1].data || []).forEach(function (x) { glOv[x.key] = x.value_id; });
+      var map = {}, order = [], missing = [];
+      r[0].forEach(function (pg, i) {
+        if (!pg) { missing.push(GL_PAGES[i][1]); return; }
+        [].forEach.call(pg.doc.querySelectorAll('img[src]'), function (im) {
+          if (im.closest('#portfolio-container')) return;
+          var s = im.getAttribute('src'); if (!s || /^data:/.test(s)) return;
+          if (!map[s]) { map[s] = { src: s, pages: [], alt: im.getAttribute('alt') || '' }; order.push(s); }
+          if (map[s].pages.indexOf(pg.page[0]) < 0) map[s].pages.push(pg.page[0]);
+        });
+      });
+      glImgs = order.map(function (s) { return map[s]; });
+      var notes = [];
+      if (missing.length) notes.push('Halaman ini tidak bisa dibaca: ' + missing.join(', ') + '. Pastikan admin dibuka dari website yang sudah online.');
+      notes.push('Foto kartu proyek di halaman Portofolio diganti lewat menu <b>Portofolio</b>.');
+      $('#gl-note').innerHTML = '<div class="text-[11px] text-slate-500 space-y-1">' + notes.map(function (n) { return '<p><i class="fa-solid fa-circle-info"></i> ' + n + '</p>'; }).join('') + '</div>';
+      renderGallery();
+    }).catch(fail);
+  }
+  function glName(s) { try { return decodeURIComponent(s.split('?')[0].split('/').pop()); } catch (e) { return s.split('/').pop(); } }
+  function pageLabel(f) { var p = GL_PAGES.find(function (x) { return x[0] === f; }); return p ? p[1] : f; }
+  function renderGallery() {
+    $('#gl-pages').innerHTML = [['', 'Semua']].concat(GL_PAGES).map(function (p) {
+      var n = p[0] ? glImgs.filter(function (i) { return i.pages.indexOf(p[0]) >= 0; }).length : glImgs.length;
+      return '<button class="text-xs font-semibold px-3 py-1.5 rounded-full border ' + (glPage === p[0] ? 'bg-sky-700 text-white border-sky-700' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50') + '" data-gp="' + p[0] + '">' + p[1] + ' <span class="opacity-70">' + n + '</span></button>';
+    }).join('');
+    var only = $('#gl-changed').checked;
+    var list = glImgs.filter(function (i) { return (!glPage || i.pages.indexOf(glPage) >= 0) && (!only || glOv[i.src]); });
+    if (!list.length) { $('#gl-grid').innerHTML = '<div class="text-sm text-slate-500 col-span-full">' + (only ? 'Belum ada gambar yang diganti.' : 'Tidak ada gambar.') + '</div>'; return; }
+    $('#gl-grid').innerHTML = list.map(function (i) {
+      var ov = glOv[i.src], shown = ov || i.src;
+      return '<div class="card overflow-hidden" data-src="' + esc(i.src) + '"><div class="h-40 bg-slate-100 relative"><img src="' + esc(shown) + '" class="w-full h-full object-contain" alt="" loading="lazy">' +
+        (ov ? '<span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white">SUDAH DIGANTI</span>' : '') + '</div>' +
+        '<div class="p-3 space-y-2"><div class="text-xs font-semibold text-slate-800 break-all line-clamp-1" title="' + esc(i.src) + '">' + esc(glName(i.src)) + '</div>' +
+        '<div class="text-[11px] text-slate-500">Dipakai di: ' + i.pages.map(pageLabel).map(esc).join(', ') + '</div>' +
+        '<div class="flex gap-2"><button class="btn btn-primary !py-1.5 flex-1 justify-center" data-g="replace"><i class="fa-solid fa-upload"></i> Ganti</button>' +
+        (ov ? '<button class="btn btn-ghost !py-1.5" data-g="reset" title="Kembali ke gambar asli di file website"><i class="fa-solid fa-rotate-left"></i> Asli</button>' : '') + '</div></div></div>';
+    }).join('');
+  }
+  function onGlClick(e) {
+    var b = e.target.closest('[data-g]'); if (!b) return;
+    var src = b.closest('[data-src]').dataset.src;
+    if (b.dataset.g === 'replace') { glTarget = src; $('#gl-file').click(); }
+    else if (b.dataset.g === 'reset') {
+      remove({ kind: 'img', key: src, scope: '' }).then(function () { delete glOv[src]; renderGallery(); toast('Dikembalikan ke gambar asli'); }).catch(fail);
+    }
+  }
+  function onGlFile() {
+    var f = this.files[0]; this.value = ''; if (!f || !glTarget) return;
+    var src = glTarget, png = /\.png$/i.test(src) && /logo|icon/i.test(src);
+    toast('Mengunggah & mengecilkan foto…');
+    uploadMedia(f, png ? 800 : 1920, png).then(function (u) {
+      return upsert([{ kind: 'img', key: src, scope: '', value_id: u, updated_at: new Date().toISOString() }]).then(function () { glOv[src] = u; });
+    }).then(function () { renderGallery(); toast('Gambar diganti, langsung tampil di website'); }).catch(fail);
+  }
+
+  /* ------------------------------ BALAS VIA GMAIL ------------------------------ */
+  function gmAcct() { try { return localStorage.getItem('candiGmailAcct') || ''; } catch (e) { return ''; } }
+  var SIGN = '\n\nSalam hormat,\nPT. Candi Oxygen\nTelp. (031) 990103 15 / 16 | WhatsApp +62 811-3739-800';
+  function gmailLink(t, m) {
+    var nm = m.full_name || '', subj, body;
+    if (t === 'reviews') { subj = 'Terima kasih atas review Anda - PT. Candi Oxygen'; body = 'Yth. ' + nm + ',\n\nTerima kasih telah meluangkan waktu memberikan review untuk PT. Candi Oxygen.\n\n\n'; }
+    else if (t === 'contact_messages') { subj = 'Re: ' + (m.subject || 'Pesan Anda kepada PT. Candi Oxygen'); body = 'Yth. ' + nm + ',\n\nTerima kasih telah menghubungi PT. Candi Oxygen.\n\n\n'; }
+    else if (t === 'quote_requests') { subj = 'Penawaran PT. Candi Oxygen untuk ' + (m.company || nm); body = 'Yth. ' + nm + ',\n\nTerima kasih atas permintaan penawaran Anda kepada PT. Candi Oxygen.\n\n\n'; }
+    else { subj = 'Lamaran Posisi ' + (m.position || '') + ' - PT. Candi Oxygen'; body = 'Yth. ' + nm + ',\n\nTerima kasih telah melamar di PT. Candi Oxygen.\n\n\n'; }
+    var a = gmAcct();
+    return 'https://mail.google.com/mail/?view=cm&fs=1&tf=1' + (a ? '&authuser=' + encodeURIComponent(a) : '') + '&to=' + encodeURIComponent(m.email) + '&su=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body + SIGN.replace(/^\n+/, ''));
+  }
+
+  /* ---------------------------------- INBOX ---------------------------------- */
+  var INB = { career_applications: [], reviews: [] };
+  var INCAT = {
+    career_applications: { label: 'Lamaran Kerja', icon: 'fa-user-tie', color: '#8b5cf6', empty: 'Belum ada lamaran kerja.' },
+    reviews: { label: 'Review Masuk', icon: 'fa-star', color: '#f59e0b', empty: 'Belum ada review. Review dari pengunjung akan muncul di sini.' }
+  };
+  var ibCat = 'career_applications', ibSub = '', ibOpen = {}, ibLoaded = false;
+
+  function refreshBadge() {
+    if (ibLoaded) { setBadge(); return; }
+    Promise.all(Object.keys(INCAT).map(function (t) { return sb.from(t).select('id', { count: 'exact', head: true }).eq('is_read', false); })).then(function (r) {
+      var n = r.reduce(function (a, x) { return a + (x.count || 0); }, 0), b = $('#inbox-badge');
+      b.textContent = n; b.classList.toggle('hidden', !n);
+    }).catch(function () {});
+  }
+  function unreadOf(t) { return INB[t].filter(function (m) { return !m.is_read; }).length; }
+  function setBadge() {
+    var n = Object.keys(INB).reduce(function (a, t) { return a + unreadOf(t); }, 0), b = $('#inbox-badge');
+    b.textContent = n; b.classList.toggle('hidden', !n);
+  }
+  function initInbox() {
+    $('#ib-cats').addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (b) { ibCat = b.dataset.cat; ibSub = ''; renderInbox(); } });
+    $('#ib-subs').addEventListener('click', function (e) { var b = e.target.closest('[data-sub]'); if (b) { ibSub = b.dataset.sub; renderInbox(); } });
+    $('#ib-unread').addEventListener('change', renderInbox);
+    $('#ib-q').addEventListener('input', renderInbox);
+    $('#ib-list').addEventListener('click', onInboxClick);
+    $('#ib-gm').value = gmAcct();
+    $('#ib-gm').addEventListener('change', function () { try { localStorage.setItem('candiGmailAcct', this.value.trim()); } catch (e) {} renderInbox(); toast('Akun Gmail disimpan di browser ini'); });
+    $('#ib-readall').addEventListener('click', function () {
+      var t = ibCat, ids = INB[t].filter(function (m) { return !m.is_read; }).map(function (m) { return m.id; });
+      if (!ids.length) { toast('Semua sudah dibaca'); return; }
+      sb.from(t).update({ is_read: true }).in('id', ids).then(function (r) { if (r.error) throw r.error; INB[t].forEach(function (m) { m.is_read = true; }); renderInbox(); setBadge(); toast('Ditandai dibaca'); }).catch(fail);
+    });
+    loadInbox();
+  }
+  function loadInbox() {
+    $('#ib-list').innerHTML = '<p class="text-sm text-slate-500">Memuat…</p>';
+    Promise.all(Object.keys(INCAT).map(function (t) { return sb.from(t).select('*').order('created_at', { ascending: false }).limit(300); })).then(function (r) {
+      Object.keys(INCAT).forEach(function (t, i) { if (r[i].error) throw r[i].error; INB[t] = r[i].data || []; });
+      ibLoaded = true; renderInbox(); setBadge();
+    }).catch(function (e) { $('#ib-list').innerHTML = ''; fail(e); });
+  }
+
+  /* --- membaca isi pesan penawaran yang disimpan sebagai teks --- */
+  function parseQuote(m) {
+    var vol = String(m.estimated_volume || ''), items = [], extra = '';
+    vol.split('\n').forEach(function (l) {
+      var x = l.match(/^\s*\d+\.\s*\[(.*?)\]\s*(.*?)\s*\|\s*Spek:\s*(.*?)\s*\|\s*Jml:\s*(.*?)\s*\|\s*Catatan:\s*(.*)$/);
+      if (x) items.push({ cat: x[1], name: x[2], spec: x[3], qty: x[4], notes: x[5] === '-' ? '' : x[5] });
+    });
+    var mm = vol.match(/Keterangan Tambahan:\s*([\s\S]*)$/);
+    extra = mm ? mm[1].trim() : (items.length ? '' : vol.trim());
+    if (extra === '-') extra = '';
+    if (!items.length && Array.isArray(m.selected_items)) items = m.selected_items.map(function (i) { return typeof i === 'string' ? { cat: '', name: i } : { cat: i.categoryLabel || '', name: i.name || i.item || '', spec: i.spec || '', qty: i.qty || '', notes: i.notes || '' }; });
+    var notes = String(m.notes || ''), pic = (notes.match(/PIC Lapangan:\s*(.*)/) || [])[1] || '', ship = (notes.match(/Catatan Pengiriman:\s*([\s\S]*)$/) || [])[1];
+    if (ship === undefined) ship = pic ? '' : notes; ship = String(ship).trim(); if (ship === '-') ship = '';
+    if (/^-\s*\(-\)$/.test(pic.trim())) pic = '';
+    return { items: items, extra: extra, pic: pic.trim(), ship: ship };
+  }
+  function qCats(m) {
+    var p = parseQuote(m), set = [];
+    p.items.forEach(function (i) { var c = normCat(i.cat); if (c && set.indexOf(c) < 0) set.push(c); });
+    return set.length ? set : ['Lainnya'];
+  }
+  function normCat(c) { c = String(c || '').replace(/\s+/g, ' ').trim(); if (!c) return ''; var l = c.toLowerCase(); if (/gas/.test(l) && /produk/.test(l)) return 'Produk Gas'; if (/layanan|servis|service/.test(l)) return 'Layanan Servis'; if (/perlengkapan|equipment/.test(l)) return 'Perlengkapan'; return c.replace(/\b\w/g, function (x) { return x.toUpperCase(); }); }
+  function subsOf(t, m) {
+    if (t === 'reviews') return [stars(m.rating) + ' (' + (m.rating || 0) + ')'];
+    return [m.position || 'Tanpa posisi'];
+  }
+  function stars(n) { n = Math.max(0, Math.min(5, parseInt(n, 10) || 0)); return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function relTime(d) {
+    var s = Math.round((Date.now() - new Date(d)) / 1000);
+    if (s < 60) return 'baru saja'; if (s < 3600) return Math.round(s / 60) + ' menit lalu'; if (s < 86400) return Math.round(s / 3600) + ' jam lalu'; if (s < 7 * 86400) return Math.round(s / 86400) + ' hari lalu';
+    return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function field(label, val) { return val ? '<div><div class="lbl !mb-0">' + label + '</div><div class="text-sm text-slate-800 break-words">' + val + '</div></div>' : ''; }
+  function box(label, text) { return text ? '<div><div class="lbl">' + label + '</div><div class="text-sm text-slate-800 bg-slate-50 border border-slate-200 rounded-lg p-3 whitespace-pre-wrap break-words">' + esc(text) + '</div></div>' : ''; }
+  function waLink(p) { return 'https://wa.me/' + String(p).replace(/\D/g, '').replace(/^0/, '62'); }
+
+  function renderInbox() {
+    // kartu kategori
+    $('#ib-cats').innerHTML = Object.keys(INCAT).map(function (t) {
+      var c = INCAT[t], u = unreadOf(t), on = t === ibCat;
+      return '<button data-cat="' + t + '" class="card p-4 text-left transition ' + (on ? 'ring-2 ring-sky-500' : 'hover:bg-slate-50') + '"><div class="flex items-center gap-3"><span class="w-10 h-10 rounded-full flex items-center justify-center text-white" style="background:' + c.color + '"><i class="fa-solid ' + c.icon + '"></i></span>' +
+        '<div class="flex-1"><div class="text-sm font-bold text-slate-900">' + c.label + '</div><div class="text-[11px] text-slate-500">' + INB[t].length + ' pesan</div></div>' +
+        (u ? '<span class="text-[11px] font-bold bg-red-500 text-white rounded-full px-2 py-0.5">' + u + ' baru</span>' : '') + '</div></button>';
+    }).join('');
+    var data = INB[ibCat], q = $('#ib-q').value.trim().toLowerCase(), onlyUnread = $('#ib-unread').checked;
+    // sub-kategori (chip)
+    var counts = {}, order = [];
+    data.forEach(function (m) { subsOf(ibCat, m).forEach(function (s) { if (!(s in counts)) { counts[s] = 0; order.push(s); } counts[s]++; }); });
+    order.sort(function (a, b) { return counts[b] - counts[a]; });
+    if (ibSub && !(ibSub in counts)) ibSub = '';
+    $('#ib-subs').innerHTML = '<button data-sub="" class="btn ' + (!ibSub ? 'btn-primary' : 'btn-ghost') + ' !py-1 !text-[11px]">Semua (' + data.length + ')</button>' +
+      order.map(function (s) { return '<button data-sub="' + esc(s) + '" class="btn ' + (ibSub === s ? 'btn-primary' : 'btn-ghost') + ' !py-1 !text-[11px]">' + esc(s) + ' (' + counts[s] + ')</button>'; }).join('');
+    // filter
+    var rows = data.filter(function (m) {
+      if (onlyUnread && m.is_read) return false;
+      if (ibSub && subsOf(ibCat, m).indexOf(ibSub) < 0) return false;
+      if (q) { var hay = [m.full_name, m.email, m.phone, m.company, m.subject, m.message, m.position, m.cover_letter, m.estimated_volume, m.notes, m.delivery_location].join(' ').toLowerCase(); if (hay.indexOf(q) < 0) return false; }
+      return true;
+    });
+    var list = $('#ib-list');
+    if (!rows.length) { list.innerHTML = '<div class="card p-6 text-sm text-slate-500">' + (data.length ? 'Tidak ada pesan yang cocok dengan filter.' : INCAT[ibCat].empty) + '</div>'; return; }
+    // kelompokkan per sub-kategori
+    var groups = {}, gorder = [];
+    rows.forEach(function (m) { var g = ibSub || subsOf(ibCat, m)[0]; if (!(g in groups)) { groups[g] = []; gorder.push(g); } groups[g].push(m); });
+    gorder.sort(function (a, b) { return groups[b].length - groups[a].length; });
+    list.innerHTML = gorder.map(function (g) {
+      var un = groups[g].filter(function (m) { return !m.is_read; }).length;
+      return '<div><div class="flex items-center gap-2 mb-2"><h3 class="text-sm font-bold text-slate-800">' + esc(g) + '</h3><span class="text-[11px] text-slate-500">' + groups[g].length + ' pesan</span>' + (un ? '<span class="text-[10px] font-bold bg-red-500 text-white rounded-full px-1.5 py-0.5">' + un + ' baru</span>' : '') + '<div class="flex-1 border-t border-slate-200"></div></div><div class="space-y-2">' + groups[g].map(card).join('') + '</div></div>';
+    }).join('');
+  }
+  function card(m) {
+    var t = ibCat, open = !!ibOpen[t + m.id], preview = '', chips = '';
+    if (t === 'reviews') { preview = String(m.message || '').replace(/\s+/g, ' ').slice(0, 110); chips = '<span class="text-[11px] font-bold text-amber-500 tracking-wider">' + stars(m.rating) + '</span>'; }
+    else if (t === 'quote_requests') {
+      var p = parseQuote(m); preview = p.items.length ? p.items.length + ' item: ' + p.items.slice(0, 3).map(function (i) { return i.name; }).join(', ') + (p.items.length > 3 ? '…' : '') : 'Permintaan penawaran';
+      chips = qCats(m).map(function (c) { return '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">' + esc(c) + '</span>'; }).join('');
+      if (m.client_type) chips += '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">' + esc(m.client_type) + '</span>';
+    } else if (t === 'contact_messages') { preview = String(m.message || '').replace(/\s+/g, ' ').slice(0, 110); }
+    else { preview = 'Melamar sebagai ' + (m.position || '-'); }
+    var head = '<button class="w-full text-left p-3.5 flex items-start gap-3 ib-toggle" data-id="' + m.id + '"><span class="mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ' + (m.is_read ? 'bg-slate-300' : 'bg-sky-500') + '"></span>' +
+      '<span class="flex-1 min-w-0"><span class="flex flex-wrap items-center gap-x-2 gap-y-1"><span class="text-sm ' + (m.is_read ? 'font-semibold' : 'font-bold') + ' text-slate-900">' + esc(m.full_name || '(tanpa nama)') + '</span>' + (m.company ? '<span class="text-xs text-slate-500">' + esc(m.company) + '</span>' : '') + chips + '</span>' +
+      '<span class="block text-xs text-slate-500 truncate mt-0.5">' + esc(preview) + '</span></span>' +
+      '<span class="text-[11px] text-slate-400 whitespace-nowrap">' + relTime(m.created_at) + ' <i class="fa-solid fa-chevron-' + (open ? 'up' : 'down') + ' ml-1"></i></span></button>';
+    var body = '';
+    if (open) {
+      var who = '<div class="grid sm:grid-cols-2 gap-3">' + field('Nama', esc(m.full_name)) + field('Perusahaan / instansi', esc(m.company)) +
+        field('Email', m.email ? '<a class="text-sky-700 underline" target="_blank" rel="noopener" href="' + esc(gmailLink(t, m)) + '">' + esc(m.email) + '</a>' : '') +
+        field('Telepon / WhatsApp', m.phone ? '<a class="text-sky-700 underline" target="_blank" rel="noopener" href="' + waLink(m.phone) + '">' + esc(m.phone) + '</a>' : '') +
+        field('Diterima', new Date(m.created_at).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })) + '</div>';
+      var main = '';
+      if (t === 'reviews') {
+        main = field('Penilaian', '<span class="text-amber-500 text-base tracking-wider">' + stars(m.rating) + '</span> <b>' + (parseInt(m.rating, 10) || 0) + ' / 5</b>') + box('Isi review', m.message);
+      } else if (t === 'quote_requests') {
+        var p2 = parseQuote(m);
+        main = '<div class="grid sm:grid-cols-2 gap-3">' + field('Jenis klien', esc(m.client_type)) + field('Lokasi pengiriman', esc(m.delivery_location)) + field('PIC lapangan', esc(p2.pic)) + '</div>';
+        if (p2.items.length) main += '<div><div class="lbl">Daftar pesanan (' + p2.items.length + ' item)</div><div class="overflow-x-auto border border-slate-200 rounded-lg"><table class="w-full text-xs"><thead class="bg-slate-50 text-slate-600"><tr><th class="text-left p-2">Kategori</th><th class="text-left p-2">Produk / layanan</th><th class="text-left p-2">Spesifikasi</th><th class="text-left p-2">Jumlah</th><th class="text-left p-2">Catatan</th></tr></thead><tbody>' +
+          p2.items.map(function (i) { return '<tr class="border-t border-slate-100"><td class="p-2">' + esc(normCat(i.cat) || '-') + '</td><td class="p-2 font-semibold">' + esc(i.name) + '</td><td class="p-2">' + esc(i.spec || '-') + '</td><td class="p-2">' + esc(i.qty || '-') + '</td><td class="p-2">' + esc(i.notes || '-') + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+        main += box('Keterangan tambahan', p2.extra) + box('Catatan pengiriman', p2.ship);
+      } else if (t === 'contact_messages') {
+        main = field('Keperluan', '<b>' + esc(m.subject || '-') + '</b>') + box('Isi pesan', m.message);
+      } else {
+        main = field('Posisi dilamar', '<b>' + esc(m.position || '-') + '</b>') +
+          '<div class="flex flex-wrap gap-2">' + (m.linkedin_url ? '<a class="btn btn-ghost !py-1" target="_blank" rel="noopener" href="' + esc(m.linkedin_url) + '"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a>' : '') + (m.portfolio_url ? '<a class="btn btn-ghost !py-1" target="_blank" rel="noopener" href="' + esc(m.portfolio_url) + '"><i class="fa-solid fa-folder-open"></i> CV / Portofolio</a>' : '') + '</div>' + box('Surat lamaran / pengalaman', m.cover_letter);
+      }
+      body = '<div class="border-t border-slate-100 p-4 space-y-4 bg-slate-50/50">' + who + main +
+        '<div class="flex flex-wrap gap-2 pt-1">' + (m.phone ? '<a class="btn btn-primary !py-1.5" style="background:#16a34a" target="_blank" rel="noopener" href="' + waLink(m.phone) + '"><i class="fa-brands fa-whatsapp"></i> Balas WhatsApp</a>' : '') +
+        (m.email ? '<a class="btn btn-ghost !py-1.5" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c" target="_blank" rel="noopener" href="' + esc(gmailLink(t, m)) + '" title="Membuka Gmail dengan penerima sudah terisi"><i class="fa-brands fa-google"></i> Balas via Gmail</a><a class="text-[11px] text-slate-400 underline self-center" href="mailto:' + esc(m.email) + '">pakai aplikasi email lain</a>' : '') +
+        '<button class="btn btn-ghost !py-1.5 ib-read" data-id="' + m.id + '">' + (m.is_read ? 'Tandai belum dibaca' : 'Tandai dibaca') + '</button>' +
+        '<button class="btn btn-danger !py-1.5 ib-del ml-auto" data-id="' + m.id + '"><i class="fa-solid fa-trash"></i> Hapus</button></div></div>';
+    }
+    return '<div class="card ' + (m.is_read ? '' : 'border-sky-300') + '" data-mid="' + m.id + '">' + head + body + '</div>';
+  }
+  function setRead(t, id, val) {
+    var m = INB[t].find(function (x) { return String(x.id) === String(id); }); if (!m) return Promise.resolve();
+    return sb.from(t).update({ is_read: val }).eq('id', id).then(function (r) { if (r.error) throw r.error; m.is_read = val; });
+  }
+  function onInboxClick(e) {
+    var t = ibCat, tg = e.target.closest('.ib-toggle'), rd = e.target.closest('.ib-read'), dl = e.target.closest('.ib-del');
+    if (tg) {
+      var id = tg.dataset.id, k = t + id; ibOpen[k] = !ibOpen[k];
+      var m = INB[t].find(function (x) { return String(x.id) === id; });
+      renderInbox();
+      if (ibOpen[k] && m && !m.is_read) setRead(t, id, true).then(function () { renderInbox(); setBadge(); }).catch(fail);
+    } else if (rd) {
+      var mm = INB[t].find(function (x) { return String(x.id) === rd.dataset.id; });
+      setRead(t, rd.dataset.id, !(mm && mm.is_read)).then(function () { renderInbox(); setBadge(); }).catch(fail);
+    } else if (dl) {
+      if (!confirm('Hapus pesan ini permanen?')) return;
+      sb.from(t).delete().eq('id', dl.dataset.id).then(function (r) { if (r.error) throw r.error; INB[t] = INB[t].filter(function (x) { return String(x.id) !== dl.dataset.id; }); renderInbox(); setBadge(); toast('Pesan dihapus'); }).catch(fail);
+    }
+  }
+
+  /* ------------------------------- LINK PELACAK ------------------------------ */
+  var LK_SRC = [
+    ['instagram', 'social', 'Instagram', 'fa-brands fa-instagram', '#e1306c', 'Tempel di kolom "Situs web" pada Edit Profil Instagram.'],
+    ['whatsapp', 'messaging', 'WhatsApp', 'fa-brands fa-whatsapp', '#16a34a', 'Tempel di profil bisnis / info WhatsApp atau di status.'],
+    ['linkedin', 'social', 'LinkedIn', 'fa-brands fa-linkedin-in', '#0a66c2', 'Tempel di kolom "Situs web" pada halaman LinkedIn perusahaan.'],
+    ['tiktok', 'social', 'TikTok', 'fa-brands fa-tiktok', '#111827', 'Tempel di kolom "Situs web" pada profil TikTok (akun bisnis).'],
+    ['facebook', 'social', 'Facebook', 'fa-brands fa-facebook-f', '#1877f2', 'Tempel di bagian Info atau tombol ajakan pada Halaman Facebook.'],
+    ['email', 'email', 'Email / newsletter', 'fa-solid fa-envelope', '#f59e0b', 'Tempel di tanda tangan email atau isi newsletter.'],
+    ['brosur', 'offline', 'Brosur / QR code', 'fa-solid fa-qrcode', '#64748b', 'Ubah menjadi QR code (misal lewat qr-code-generator.com) lalu cetak.'],
+    ['google-bisnisku', 'search', 'Google Business Profile', 'fa-brands fa-google', '#ea4335', 'Tempel di kolom "Situs web" pada profil Bisnis Google.']
+  ];
+  function lkUrl(s) {
+    var base = location.origin + location.pathname.replace(/[^/]*$/, '');
+    var u = base + $('#u-page').value + '?utm_source=' + encodeURIComponent(s[0]) + '&utm_medium=' + s[1];
+    var c = $('#u-camp').value.trim().toLowerCase().replace(/[^a-z0-9-_]+/g, '-'); if (c) u += '&utm_campaign=' + encodeURIComponent(c);
+    return u;
+  }
+  function copyText(t) { return (navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () { var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); }); }
+  function initLinks() {
+    $('#u-page').innerHTML = PAGES.map(function (p) { return '<option value="' + p[0] + '">' + p[1] + '</option>'; }).join('');
+    function draw() {
+      $('#u-list').innerHTML = LK_SRC.map(function (s, i) {
+        var u = lkUrl(s);
+        return '<div class="card p-3 flex flex-wrap items-center gap-3"><div class="w-9 h-9 rounded-full text-white flex items-center justify-center shrink-0" style="background:' + s[4] + '"><i class="' + s[3] + '"></i></div>' +
+          '<div class="flex-1 min-w-[180px]"><div class="text-sm font-bold text-slate-900">' + s[2] + '</div><div class="text-[11px] text-slate-500">' + s[5] + '</div><div class="text-[10px] text-slate-400 font-mono truncate max-w-md">' + esc(u) + '</div></div>' +
+          '<button class="btn btn-primary" data-lk="' + i + '"><i class="fa-regular fa-copy"></i> Salin link</button></div>';
+      }).join('');
+    }
+    $('#u-page').addEventListener('change', draw); $('#u-camp').addEventListener('input', draw);
+    $('#u-list').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-lk]'); if (!b) return;
+      var s = LK_SRC[Number(b.dataset.lk)];
+      copyText(lkUrl(s)).then(function () { toast('Link ' + s[2] + ' disalin. Tinggal tempel.'); b.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin'; setTimeout(function () { b.innerHTML = '<i class="fa-regular fa-copy"></i> Salin link'; }, 2000); });
+    });
+    draw();
+  }
+})();
+</script>
+</body>
+</html>
