@@ -1,6 +1,6 @@
-# PT. CANDI OXYGEN — PREMIER LUXURY WEBSITE
+# PT. CANDI OXYGEN — WEBSITE RESMI
 
-Website resmi multi-page untuk **PT. Candi Oxygen** dengan estetika dan standar kemewahan tingkat tinggi yang terinspirasi oleh website resmi **Rolex (rolex.com)** dan **Omega Watches**.
+Website multi-halaman PT. Candi Oxygen dengan panel admin, dibangun dengan **React** (frontend) dan **Laravel** (backend).
 
 ---
 
@@ -26,94 +26,41 @@ Website resmi multi-page untuk **PT. Candi Oxygen** dengan estetika dan standar 
 
 ---
 
-## 🚀 Fitur Baru & Pembaruan Sistem
-
-### 1. Mode Dua Bahasa (Bilingual: Indonesia 🇮🇩 & English 🇬🇧)
-- Pengunjung dapat memilih bahasa melalui tombol bendera di header (desktop & mobile).
-- Sistem didukung oleh engine penerjemahan real-time [`assets/js/i18n.js`](file:///c:/Users/tobym/Downloads/WEBSITE%20CDO/assets/js/i18n.js).
-- Pilihan bahasa tersimpan otomatis di `localStorage` peramban pengunjung sehingga tidak hilang saat berpindah halaman.
-
-### 2. Search Bar Header Terintegrasi dengan Pemisah Kategori
-- Kotak pencarian hadir di header seluruh halaman (`header-search-wrap`).
-- Mengetikkan huruf akan memunculkan menu saran (*suggestion dropdown*) real-time yang memisahkan hasil pencarian dengan header kategori berikon:
-  - `PRODUK GAS (INDUSTRIAL & MEDICAL)`
-  - `LAYANAN PROFESIONAL (SERVICES)`
-  - `PERLENGKAPAN GAS (EQUIPMENT)`
-- Mengklik salah satu saran akan mengarahkan pengguna langsung ke modal spesifikasi atau bagian terkait.
-
-### 3. Showroom Dinamis & Unik pada Halaman Produk & Layanan (`products.html`)
-- Menggantikan daftar teks biasa dengan showroom interaktif mewah:
-  - Simbol kimia berelemen elegan ($O_2, N_2, Ar, C_2H_2, CO_2$).
-  - Tag kemurnian gas (*Industrial Grade, High Purity, Ultra High Purity 99.999%*).
-  - Spesifikasi bejana tekan dan standar regulasi K3.
-  - Modal interaktif spesifikasi teknis lengkap dengan tombol aksi langsung ke formulir RFQ.
-
-### 4. Dynamic Order Table pada Halaman Ajukan Penawaran (`quote.html`)
-- Menjawab masalah jika pelanggan memesan banyak jenis gas berbeda, ukuran berbeda, dan alat berbeda.
-- Mengganti isian kotak teks panjang yang membingungkan dengan sistem tabel pemesanan dinamis:
-  - Pemilihan Komoditas / Layanan melalui dropdown terkelompok.
-  - Pemilihan Ukuran / Spesifikasi Tabung ($1\text{ m}^3, 1.5\text{ m}^3, 2\text{ m}^3, 6\text{ m}^3, 7\text{ m}^3$, Cradle, Dewar Liquid).
-  - Input jumlah kuantitas dan catatan khusus per item.
-  - Tombol **Preset Cepat** (+10 Tabung Oksigen $6\text{ m}^3$, +5 Tabung Nitrogen, dll).
-  - Tabel rekapitulasi langsung dengan penghitung jumlah item dan tombol hapus baris.
-  - Saat form dikirim, seluruh isi tabel terformat rapi dan masuk ke database Supabase.
-
-### 5. Company Journey Timeline pada Halaman Tentang Kami (`about.html`)
-- Jejak rekam jejak vertikal elegan ala Rolex dengan penanda tahun, judul tonggak pencapaian, dan cerita historis.
-- Dilengkapi komentar penanda HTML yang jelas (`<!-- [EDIT TIMELINE N: ...] -->`) untuk memudahkan penambahan atau perubahan tahun di masa depan.
-
----
-
-## 📂 Struktur Berkas Website
+## 📂 Struktur
 
 ```
-WEBSITE CDO/
-├── index.html              # Beranda (Rolex Hero, Single Showcase Oksigen Medis, Pinpoint Safe N Lock)
-├── about.html              # Tentang Kami (Rolex Hero, Sejarah, Timeline, Visi & Misi Resmi Verbatim)
-├── products.html           # Showroom Dinamis Produk, Layanan & Perlengkapan + Modal Spesifikasi
-├── portfolio.html          # Portofolio Proyek (Filter Kategori Interaktif, Rekam Jejak Medis & Industri)
-├── career.html             # Karir & Rekrutmen (Formasi Terbuka, Sistem Talent Pool, Modal Lamaran)
-├── contact.html            # Kontak & Lokasi (Peta Interaktif Safe N Lock Sidoarjo, Formulir Pesan)
-├── quote.html              # Ajukan Penawaran Resmi (Dynamic Order Table & RFQ Supabase)
-├── supabase-schema.sql     # Skrip SQL tabel kontak, RFQ, dan lamaran karir
-├── assets/
-│   ├── css/
-│   │   └── style.css       # Google Fonts (Montserrat & Roboto), styling tema Rolex, Omega lines, Order Table
-│   ├── js/
-│   │   ├── i18n.js         # Kamus dwibasa & sistem switch bahasa ID/EN otomatis
-│   │   ├── main.js         # Pengendali search bar, dynamic order table, scroll fade headings, filter
-│   │   └── supabase.js     # Integrasi API Supabase untuk semua form
-│   └── images/
-│       └── logo.png        # Logo resmi PT. Candi Oxygen
-└── README.md
+WEBSITE-CDO-main/
+├── frontend/   # React + Vite: website publik (8 halaman) + panel admin (/admin)
+└── backend/    # Laravel API: isi CMS, formulir, lowongan, portofolio, galeri, statistik, login admin
 ```
 
----
+## 🚀 Menjalankan
 
-## 📋 Panduan Pengelolaan Website
+```bash
+# Backend
+cd backend
+composer install && cp .env.example .env && php artisan key:generate
+php artisan migrate && php artisan storage:link
+php artisan admin:create admin@candioxygen.co.id
+php artisan serve                       # http://localhost:8000
 
-### 1. Cara Mengubah atau Menambah Linimasa (Timeline) di `about.html`
-Buka [`about.html`](file:///c:/Users/tobym/Downloads/WEBSITE%20CDO/about.html) lalu cari komentar:
-```html
-<!-- [EDIT TIMELINE 1: AWAL MULA 1980] -->
-<!-- [EDIT TIMELINE 2: EKSPANSI PERGUDANGAN SAFE N LOCK] -->
-<!-- [EDIT TIMELINE 3: SERTIFIKASI K3 BEJANA BERTEKANAN] -->
-<!-- [EDIT TIMELINE 4: MODERNISASI FILLING STATION] -->
-<!-- [EDIT TIMELINE 5: TRANSFORMATIF PT. CANDI OXYGEN HARI INI] -->
+# Frontend (pengembangan)
+cd frontend
+npm install && npm run dev              # http://localhost:5173
+
+# Produksi (satu domain, disajikan Laravel)
+cd frontend && npm run build:laravel
 ```
-Anda cukup menyalin salah satu blok kartu timeline tersebut untuk menambahkan tahun baru.
 
-### 2. Cara Mengatur Status Lowongan Karir di `career.html`
-- **Jika Sedang Tidak Ada Lowongan**:
-  Buka [`career.html`](file:///c:/Users/tobym/Downloads/WEBSITE%20CDO/career.html), tambahkan class `hidden` pada `<div id="active-positions-container">` dan hapus class `hidden` pada `<div id="no-positions-container">`. Pengunjung akan diarahkan untuk mendaftarkan CV ke **Talent Pool**.
-- **Jika Ingin Menambah Posisi Baru**:
-  Salin salah satu blok kartu lowongan di dalam `#active-positions-container` dan sesuaikan nama jabatan, kualifikasi, serta nilai atribut `data-career-role`.
+Detail: [backend/README.md](backend/README.md) · [frontend/README.md](frontend/README.md)
 
-### 3. Kemana Seluruh Data Formulir Masuk?
-Seluruh formulir terintegrasi ke database **Supabase**:
-1. **Formulir RFQ / Penawaran** (`quote.html` & `products.html`) $\rightarrow$ Tabel `public.quote_requests`. Daftar item pesanan dari *Dynamic Order Table* tersusun rapi di kolom `estimated_volume` dan `selected_items`.
-2. **Formulir Kontak** (`contact.html`) $\rightarrow$ Tabel `public.contact_messages`.
-3. **Formulir Lamaran Karir** (`career.html`) $\rightarrow$ Tabel `public.career_applications`.
+## 📋 Fitur
+
+- Dua bahasa (Indonesia / English), pilihan tersimpan otomatis.
+- Pencarian di header dengan saran per kategori (gas, layanan, perlengkapan).
+- Showroom produk dengan modal spesifikasi, keranjang, dan tabel pesanan dinamis di halaman Penawaran.
+- Formulir kontak, penawaran (RFQ), lamaran karir, dan ulasan, semua masuk ke inbox admin.
+- Panel admin: ubah teks/gambar/link website, kelola lowongan, portofolio, galeri kegiatan, dan lihat statistik kunjungan.
 
 ---
 
