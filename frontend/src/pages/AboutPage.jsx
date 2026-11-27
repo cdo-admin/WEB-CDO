@@ -1,5 +1,5 @@
 import { T, TH, CImg, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export const meta = { page: "about.html", title: "Tentang Kami | PT. Candi Oxygen", description: "Profil resmi, visi misi verbatim, sejarah panjang sejak tahun 1980, dan komitmen PT. Candi Oxygen sebagai industri supplier gas berkualitas tinggi di Safe N Lock Sidoarjo." };
 

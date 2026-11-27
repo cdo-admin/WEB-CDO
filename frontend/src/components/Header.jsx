@@ -1,8 +1,8 @@
 // Header (logo, menu, pencarian, pilihan bahasa) + menu laci HP. Dulu initNavbar/initActiveNavLink di main.js.
 import { useEffect, useState } from 'react';
 import { T, CImg, CLink } from '../cms/components.jsx';
-import { usePageFile } from '../cms/CmsProvider.jsx';
-import { useI18n } from '../i18n/I18nProvider.jsx';
+import { usePageFile } from '../cms/cms.js';
+import { useI18n } from '../i18n/i18n.js';
 import HeaderSearch from './HeaderSearch.jsx';
 
 const NAV = [
@@ -39,9 +39,17 @@ export default function Header() {
     return () => window.removeEventListener('scroll', on);
   }, []);
 
-  const openMenu = () => { setMenu(true); document.body.style.overflow = 'hidden'; setTimeout(() => setSlide(true), 10); };
-  const closeMenu = () => { setSlide(false); document.body.style.overflow = ''; setTimeout(() => setMenu(false), 350); };
-  useEffect(() => { if (menu) closeMenu(); }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+  const openMenu = () => { setMenu(true); setTimeout(() => setSlide(true), 10); };
+  const closeMenu = () => { setSlide(false); setTimeout(() => setMenu(false), 350); };
+  // pindah halaman -> laci langsung ditutup (disesuaikan saat render, bukan lewat effect)
+  const [prevPage, setPrevPage] = useState(page);
+  if (page !== prevPage) { setPrevPage(page); if (menu) { setSlide(false); setMenu(false); } }
+  // kunci scroll body selama laci terpasang
+  useEffect(() => {
+    if (!menu) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [menu]);
 
   return (
     <>

@@ -1,21 +1,7 @@
 // Tombol "Pesan" (+ "Spesifikasi" bila ada datanya) pada kartu di halaman Produk & Layanan.
-import { useCmsText } from '../cms/components.jsx';
-import { useCms, useScope } from '../cms/CmsProvider.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
-import { useCart, specFor } from './Cart.jsx';
-import { NAME_MAP, CAT_LABEL } from '../data/cartNames.js';
-
-export function useProduct(title, cat, img) {
-  const text = useCmsText();
-  const { pick } = useCms();
-  const scope = useScope();
-  const idTitle = text(title, { translate: false });
-  const ov = img ? pick('img', scope, img) : null;
-  return {
-    idTitle, title: text(title), name: NAME_MAP[idTitle] || idTitle,
-    category: cat, categoryLabel: CAT_LABEL[cat], img: ov && ov.id ? ov.id : img || '',
-  };
-}
+import { useT } from '../i18n/i18n.js';
+import { useCart, specFor } from './cartContext.js';
+import { useProduct } from './useProduct.js';
 
 export default function OrderButton({ title, cat = 'gas', img, big, className, children }) {
   const t = useT();

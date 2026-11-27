@@ -7,7 +7,17 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   base: mode === 'laravel' ? '/app/' : '/',
-  build: mode === 'laravel' ? { outDir: '../backend/public/app', emptyOutDir: true } : {},
+  build: {
+    ...(mode === 'laravel' ? { outDir: '../backend/public/app', emptyOutDir: true } : {}),
+    rolldownOptions: {
+      output: {
+        // React & router jarang berubah -> chunk terpisah agar bundle utama < 500 kB dan cache browser awet
+        codeSplitting: {
+          groups: [{ name: 'vendor-react', test: /node_modules[\\/](react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)[\\/]/ }],
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:8000',

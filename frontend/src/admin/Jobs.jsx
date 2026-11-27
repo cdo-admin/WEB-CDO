@@ -1,9 +1,10 @@
 // Lowongan Karir: tambah, ubah, sembunyikan, urutkan, atau hapus lowongan di halaman Karir.
 import { useEffect, useState } from 'react';
-import { getConfig, setConfig, Modal, RowActions, StatusChip, useAdminToast, useFail } from './common.jsx';
+import { Modal, RowActions, StatusChip } from './common.jsx';
+import { getConfig, setConfig, useAdminToast, useFail } from './adminLib.js';
 import { useItems } from './useItems.js';
+import { JOB_COLORS } from './jobColors.js';
 
-export const JOB_COLORS = { sky: ['#e0f2fe', '#0369a1', 'Biru'], emerald: ['#d1fae5', '#047857', 'Hijau'], purple: ['#f3e8ff', '#7e22ce', 'Ungu'], amber: ['#fef3c7', '#b45309', 'Oranye'], rose: ['#ffe4e6', '#be123c', 'Merah'], slate: ['#e2e8f0', '#334155', 'Abu-abu'] };
 const SEED_JOBS = [
   { title: 'Teknisi Stasiun Pengisian (Filling Station Operator)', category: 'PABRIK & OPERASIONAL', color: 'sky', location: 'Safe N Lock Sidoarjo',
     description: 'Mengoperasikan sistem manifold pengisian gas silinder Oksigen, Nitrogen, Argon, dan CO2, melakukan pengecekan visual kondisi tabung, serta memastikan prosedur keselamatan K3 bejana bertekanan terpenuhi.',

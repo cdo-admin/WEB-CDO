@@ -1,7 +1,7 @@
 import { useContactForm, useReviewForm } from '../components/ContactForms.jsx';
 import PhoneInput from '../components/PhoneInput.jsx';
 import { T, CImg, CLink, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 import CandiMap from '../components/CandiMap.jsx';
 
 export const meta = { page: "contact.html", title: "Kontak & Lokasi Markas | PT. Candi Oxygen", description: "Hubungi kantor pusat & stasiun pengisian gas PT. Candi Oxygen di Kawasan Industri Safe N Lock Sidoarjo. Layanan pasokan gas industri & medis." };

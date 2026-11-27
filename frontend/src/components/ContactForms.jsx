@@ -1,11 +1,11 @@
 // Formulir halaman Kontak: pesan (dibuka di Gmail) dan review bintang (POST /api/reviews).
 import { useState } from 'react';
 import { api } from '../lib/api.js';
-import { useI18n } from '../i18n/I18nProvider.jsx';
-import { useToast } from './Toast.jsx';
-import { validatePhones } from './PhoneInput.jsx';
+import { useI18n } from '../i18n/i18n.js';
+import { useToast } from './toastContext.js';
+import { validatePhones } from './phone.js';
 import { gmailCompose, preOpen, openIn } from '../lib/order.js';
-import { useContactTargets } from './Cart.jsx';
+import { useContactTargets } from './cartContext.js';
 
 export function useContactForm() {
   const toast = useToast();

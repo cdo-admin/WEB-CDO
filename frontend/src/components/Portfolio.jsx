@@ -2,14 +2,13 @@
    Selama admin belum mengaktifkan "atur dari admin", kartu bawaan di halaman (children) yang dipakai. */
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import { useI18n } from '../i18n/I18nProvider.jsx';
+import { useI18n } from '../i18n/i18n.js';
 import { T } from '../cms/components.jsx';
-import { useCms } from '../cms/CmsProvider.jsx';
+import { useCms } from '../cms/cms.js';
 import { assetUrl } from '../lib/pages.js';
+import { PF_BADGE, PF_TXT } from './portfolioColors.js';
 
 const PF_KEY = 'candiPortfolioCache2';
-export const PF_BADGE = { navy: '#0A192F', sky: '#0284c7', emerald: '#047857', amber: '#b45309', rose: '#be123c', slate: '#334155' };
-export const PF_TXT = { emerald: '#059669', sky: '#0284c7', amber: '#d97706', rose: '#e11d48', slate: '#475569', navy: '#0A192F' };
 const BASE_FILTERS = [['all', 'Semua Proyek'], ['medis', 'Medis & Rumah Sakit'], ['kriogenik', 'Filling Station & Dewars'], ['industri', 'Industri & Fabrikasi Baja']];
 const ON = 'bg-navy-900 text-white shadow-luxury-sm', OFF = 'bg-white text-navy-900 border border-slate-200 hover:border-navy-900';
 

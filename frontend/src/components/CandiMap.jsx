@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { LOCATIONS, JATIM, PIN_COLORS } from '../data/locations.js';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 
 const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pinSvg = (color) => '<svg class="cmap-pin" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg"><path d="M17 1C8.7 1 2 7.6 2 15.8 2 27 17 43 17 43s15-16 15-27.2C32 7.6 25.3 1 17 1z" fill="' + color + '" stroke="#fff" stroke-width="2"/><circle cx="17" cy="16" r="6" fill="#fff"/></svg>';

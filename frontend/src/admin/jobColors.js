@@ -1,0 +1,1 @@
+export const JOB_COLORS = { sky: ['#e0f2fe', '#0369a1', 'Biru'], emerald: ['#d1fae5', '#047857', 'Hijau'], purple: ['#f3e8ff', '#7e22ce', 'Ungu'], amber: ['#fef3c7', '#b45309', 'Oranye'], rose: ['#ffe4e6', '#be123c', 'Merah'], slate: ['#e2e8f0', '#334155', 'Abu-abu'] };

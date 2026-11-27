@@ -1,7 +1,7 @@
 // Tombol bebas yang membuka jendela pesan / spesifikasi produk (mis. di Beranda).
 import { createElement } from 'react';
-import { useT } from '../i18n/I18nProvider.jsx';
-import { useCart } from './Cart.jsx';
+import { useT } from '../i18n/i18n.js';
+import { useCart } from './cartContext.js';
 import { productByTitle } from '../data/cartNames.js';
 
 export default function CartTrigger({ as = 'button', order, spec, img, children, ...rest }) {

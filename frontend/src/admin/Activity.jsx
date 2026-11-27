@@ -1,6 +1,7 @@
 // Galeri Kegiatan: foto kegiatan kantor (outing, 17 Agustusan, buka bersama, dll) untuk halaman Galeri.
 import { useState } from 'react';
-import { uploadMedia, Modal, PhotoStrip, RowActions, StatusChip, useAdminToast, useFail } from './common.jsx';
+import { Modal, PhotoStrip, RowActions, StatusChip } from './common.jsx';
+import { uploadMedia, useAdminToast, useFail } from './adminLib.js';
 import { useItems } from './useItems.js';
 
 function AcForm({ p, onClose, onSave }) {

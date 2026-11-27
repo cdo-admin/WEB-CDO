@@ -1,7 +1,7 @@
 // Pesan Masuk: lamaran kerja & review pengunjung. Balas lewat WhatsApp atau Gmail.
 import { useCallback, useEffect, useState } from 'react';
 import { adminApi } from '../lib/api.js';
-import { useAdminToast, useFail } from './common.jsx';
+import { useAdminToast, useFail } from './adminLib.js';
 
 const INCAT = {
   career_applications: { label: 'Lamaran Kerja', icon: 'fa-user-tie', color: '#8b5cf6', empty: 'Belum ada lamaran kerja.' },

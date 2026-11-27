@@ -1,7 +1,7 @@
 // Link Pelacak: link berparameter utm_source agar menu Statistik tahu persis asal pengunjung.
 import { useState } from 'react';
 import { PAGE_ROUTES, PAGE_LABELS } from '../lib/pages.js';
-import { useAdminToast } from './common.jsx';
+import { useAdminToast } from './adminLib.js';
 
 const LK_SRC = [
   ['instagram', 'social', 'Instagram', 'fa-brands fa-instagram', '#e1306c', 'Tempel di kolom "Situs web" pada Edit Profil Instagram.'],

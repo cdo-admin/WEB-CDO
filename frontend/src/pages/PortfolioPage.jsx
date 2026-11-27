@@ -1,6 +1,6 @@
 import { T, CImg, CLink, Card } from '../cms/components.jsx';
 import { PortfolioProvider, PortfolioFilters, PortfolioGrid } from '../components/Portfolio.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export const meta = { page: "portfolio.html", title: "Portofolio & Rekam Jejak Industri | PT. Candi Oxygen", description: "Rekam jejak dan galeri proyek pasokan gas industri, gas medis, filling station Safe N Lock, dan instalasi sistem pemipaan gas oleh PT. Candi Oxygen sejak tahun 1980." };
 
@@ -83,7 +83,7 @@ export default function PortfolioPage() {
             </div></Card>
             <Card sig={"portfolio.html|Suplai Argon, Mixed Gases & Purging Nitrogen Galangan"}><div className="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="industri">
               <div className="relative h-64 overflow-hidden">
-                <CImg src={"https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"} alt={t("Fabrikasi Baja dan Pengelasan Presisi Gresik & Pasuruan")} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <CImg src={"assets/images/produk dan layanan/gambar welding.jpg"} alt={t("Fabrikasi Baja dan Pengelasan Presisi Gresik & Pasuruan")} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute top-4 left-4 bg-navy-950 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm"><T>{"INDUSTRI & GALANGAN"}</T></div>
               </div>
               <div className="p-8 space-y-4">
@@ -149,7 +149,7 @@ export default function PortfolioPage() {
             </div></Card>
             <Card sig={"portfolio.html|Pembersihan & Inerting Jaringan Pipa dengan Nitrogen Kering"}><div className="portfolio-item luxury-image-card bg-slate-50 rounded-sm border border-slate-200 overflow-hidden shadow-luxury-sm group transition-all duration-300" data-category="kriogenik">
               <div className="relative h-64 overflow-hidden">
-                <CImg src={"https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80"} alt={t("Purging Pipelines with Nitrogen di Pabrik Petrokimia")} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <CImg src={"assets/images/produk dan layanan/purging pipeline layanan.jpg"} alt={t("Purging Pipelines with Nitrogen di Pabrik Petrokimia")} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute top-4 left-4 bg-navy-950 text-white text-[10px] tracking-[0.2em] uppercase font-mono px-3 py-1 rounded-sm"><T>PURGING PIPELINE</T></div>
               </div>
               <div className="p-8 space-y-4">

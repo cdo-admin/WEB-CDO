@@ -1,5 +1,5 @@
 import { T, CImg, CLink, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export default function Footer() {
   const t = useT();

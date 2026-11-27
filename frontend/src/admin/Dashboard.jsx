@@ -1,17 +1,9 @@
 // Statistik pengunjung: dari mana pengunjung datang dan halaman apa yang mereka buka.
 import { useCallback, useEffect, useState } from 'react';
 import { adminApi } from '../lib/api.js';
-import { useFail } from './common.jsx';
+import { useFail } from './adminLib.js';
+import { SRC } from './sources.js';
 
-export const SRC = {
-  instagram: ['Instagram', '#E1306C', 'fa-brands fa-instagram'], whatsapp: ['WhatsApp', '#22c55e', 'fa-brands fa-whatsapp'],
-  linkedin: ['LinkedIn', '#0A66C2', 'fa-brands fa-linkedin-in'], tiktok: ['TikTok', '#0f172a', 'fa-brands fa-tiktok'],
-  facebook: ['Facebook', '#1877F2', 'fa-brands fa-facebook-f'], youtube: ['YouTube', '#ef4444', 'fa-brands fa-youtube'],
-  google: ['Google (pencarian)', '#f59e0b', 'fa-brands fa-google'], bing: ['Bing', '#0ea5e9', 'fa-solid fa-magnifying-glass'],
-  direct: ['Langsung / tidak diketahui', '#64748b', 'fa-solid fa-arrow-pointer'], email: ['Email', '#8b5cf6', 'fa-solid fa-envelope'],
-  brosur: ['Brosur / QR', '#14b8a6', 'fa-solid fa-qrcode'], telegram: ['Telegram', '#38bdf8', 'fa-brands fa-telegram'], x: ['X / Twitter', '#111827', 'fa-brands fa-x-twitter'],
-  'google-bisnisku': ['Google Business', '#f59e0b', 'fa-brands fa-google'],
-};
 const srcMeta = (k) => SRC[k] || [k, '#94a3b8', 'fa-solid fa-globe'];
 const PAGE_NAME = { 'index.html': 'Beranda', 'about.html': 'Tentang Kami', 'products.html': 'Produk & Layanan', 'portfolio.html': 'Portofolio', 'gallery.html': 'Galeri Kegiatan', 'career.html': 'Karir', 'contact.html': 'Kontak', 'quote.html': 'Ajukan Penawaran' };
 const day = (d) => d.toLocaleDateString('en-CA');
@@ -51,7 +43,6 @@ export default function Dashboard() {
   const [d, setD] = useState(null);
   const load = useCallback(() => {
     const since = new Date(); since.setHours(0, 0, 0, 0); since.setDate(since.getDate() - (days - 1));
-    setD(null);
     adminApi('/stats', { query: { since: since.toISOString() } }).then((r) => {
       const v = r.views || [], visitors = {}, sessions = {};
       v.forEach((x) => { visitors[x.visitor_id] = 1; if (!sessions[x.session_id]) sessions[x.session_id] = x; });
@@ -72,10 +63,10 @@ export default function Dashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div><h2 className="text-xl font-bold text-slate-900">Statistik Pengunjung</h2><p className="text-xs text-slate-500">Dari mana pengunjung datang dan halaman apa yang mereka buka.</p></div>
         <div className="flex gap-2">
-          <select className="inp !w-auto" value={days} onChange={(e) => setDays(+e.target.value)}>
+          <select className="inp !w-auto" value={days} onChange={(e) => { setD(null); setDays(+e.target.value); }}>
             <option value="1">Hari ini</option><option value="7">7 hari terakhir</option><option value="30">30 hari terakhir</option><option value="90">90 hari terakhir</option>
           </select>
-          <button type="button" className="btn btn-ghost" onClick={load}><i className="fa-solid fa-rotate" /> Muat ulang</button>
+          <button type="button" className="btn btn-ghost" onClick={() => { setD(null); load(); }}><i className="fa-solid fa-rotate" /> Muat ulang</button>
         </div>
       </div>
       {!d ? <div className="text-sm text-slate-500">Memuat…</div> : (

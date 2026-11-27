@@ -1,7 +1,7 @@
 // Edit Website: halaman tampil di iframe (?cms_edit=1). Klik teks / gambar / link / kartu -> ubah di panel kanan.
 import { useEffect, useRef, useState } from 'react';
 import { PAGE_ROUTES } from '../lib/pages.js';
-import { upsert, removeContent, listContent, getConfig, setConfig, uploadMedia, useAdminToast, useFail } from './common.jsx';
+import { upsert, removeContent, listContent, getConfig, setConfig, uploadMedia, useAdminToast, useFail } from './adminLib.js';
 
 const PAGES = [['index.html', 'Beranda'], ['about.html', 'Tentang'], ['products.html', 'Produk'], ['portfolio.html', 'Portofolio'], ['gallery.html', 'Galeri Kegiatan'], ['career.html', 'Karir'], ['contact.html', 'Kontak'], ['quote.html', 'Penawaran']];
 const QCAT = { gases: 'gas', services: 'service', equipment: 'equipment' };

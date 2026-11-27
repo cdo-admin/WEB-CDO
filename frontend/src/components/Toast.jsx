@@ -1,8 +1,7 @@
-import { createContext, useCallback, useContext, useState } from 'react';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useCallback, useState } from 'react';
+import { ToastCtx } from './toastContext.js';
+import { useT } from '../i18n/i18n.js';
 
-const ToastCtx = createContext(() => {});
-export const useToast = () => useContext(ToastCtx);
 
 let seq = 0;
 export function ToastProvider({ children }) {

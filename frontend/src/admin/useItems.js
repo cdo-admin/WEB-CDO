@@ -1,7 +1,7 @@
 // Hook bersama untuk daftar Lowongan / Portofolio / Galeri Kegiatan (tabel di Laravel: /api/admin/items/{type}).
 import { useCallback, useEffect, useState } from 'react';
 import { adminApi } from '../lib/api.js';
-import { moveItem, useAdminToast, useFail } from './common.jsx';
+import { moveItem, useAdminToast, useFail } from './adminLib.js';
 
 export function useItems(type, { onChange } = {}) {
   const toast = useAdminToast(), fail = useFail();

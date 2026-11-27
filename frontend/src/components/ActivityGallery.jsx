@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
-import { useI18n } from '../i18n/I18nProvider.jsx';
+import { useI18n } from '../i18n/i18n.js';
 import { assetUrl } from '../lib/pages.js';
 
 const photosOf = (it) => { const a = [it.image_url].concat(Array.isArray(it.photos) ? it.photos : []).filter(Boolean); return a.filter((u, i) => a.indexOf(u) === i); };

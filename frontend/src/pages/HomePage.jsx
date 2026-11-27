@@ -1,5 +1,5 @@
 import { T, TH, CImg, CLink, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 import CartTrigger from '../components/CartTrigger.jsx';
 import CandiMap from '../components/CandiMap.jsx';
 import { useHeroScroll } from '../hooks/usePageEffects.js';

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ApplyCtx, ApplyButton, JobCard, useJobs, useCareerSubmit } from '../components/Career.jsx';
+import { ApplyButton, JobCard } from '../components/Career.jsx';
+import { ApplyCtx, useJobs, useCareerSubmit } from '../components/careerData.js';
 import PhoneInput from '../components/PhoneInput.jsx';
 import { T, TH, CImg, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export const meta = { page: "career.html", title: "Karir & Peluang Profesional | PT. Candi Oxygen", description: "Peluang karir profesional di PT. Candi Oxygen. Supplier gas industri dan medis terkemuka sejak tahun 1980 di Jawa Timur." };
 

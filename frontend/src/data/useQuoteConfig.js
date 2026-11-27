@@ -1,6 +1,6 @@
 // Pilihan produk, ukuran, dan varian form penawaran: bawaan (quoteOptions.js) + perubahan dari admin.
 import { useMemo } from 'react';
-import { useCms } from '../cms/CmsProvider.jsx';
+import { useCms } from '../cms/cms.js';
 import { QUOTE_BASE_OPTIONS, PER_PRODUCT as BASE_PP, VARIANTS as BASE_VAR, SPECS, CUSTOM_SPEC } from './quoteOptions.js';
 
 const CAT_LABELS = { gas: 'Produk Gas', service: 'Layanan Servis', equipment: 'Perlengkapan Gas' };

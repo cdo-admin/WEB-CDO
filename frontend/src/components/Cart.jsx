@@ -2,34 +2,18 @@
    1. Halaman Produk: "Pesan" -> jendela spesifikasi/kustomisasi -> "Masukkan Keranjang".
    2. Isi keranjang tersimpan di browser (tetap ada walau pindah halaman).
    3. Keranjang -> "Pesan" -> halaman /quote yang sudah berisi pesanan. */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useI18n } from '../i18n/I18nProvider.jsx';
-import { useCms, usePageFile } from '../cms/CmsProvider.jsx';
-import { useToast } from './Toast.jsx';
+import { useI18n } from '../i18n/i18n.js';
+import { usePageFile } from '../cms/cms.js';
+import { useToast } from './toastContext.js';
 import { useQuoteConfig, pair, isCustom, compose, specGroups } from '../data/useQuoteConfig.js';
-import { PRODUCT_SPECS, SPEC_LABELS } from '../data/productSpecs.js';
+import { SPEC_LABELS } from '../data/productSpecs.js';
+import { CART_KEY, CartCtx, loadCart, useCart, specFor } from './cartContext.js';
 import { assetUrl } from '../lib/pages.js';
-import { WA_FALLBACK, MAIL_FALLBACK } from '../lib/order.js';
-
-const KEY = 'candiCart1';
-const load = () => { try { const a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; } catch { return []; } };
-const CartCtx = createContext(null);
-export const useCart = () => useContext(CartCtx);
-export const specFor = (idTitle) => PRODUCT_SPECS[idTitle];
-
-/** Nomor WhatsApp & email tujuan pesanan, ikut perubahan link dari admin. */
-export function useContactTargets() {
-  const { pick } = useCms();
-  const wa = pick('href', '', 'https://wa.me/' + WA_FALLBACK);
-  const m = wa && /wa\.me\/(\d+)/.exec(wa.id || '');
-  const mail = pick('href', '', 'mailto:' + MAIL_FALLBACK);
-  const mm = mail && /^mailto:([^?]+)/.exec(mail.id || '');
-  return { waNumber: m ? m[1] : WA_FALLBACK, email: mm ? mm[1] : MAIL_FALLBACK };
-}
 
 export function CartProvider({ children }) {
-  const [items, setItemsState] = useState(load);
+  const [items, setItemsState] = useState(loadCart);
   const [drawer, setDrawer] = useState(false);
   const [order, setOrder] = useState(null); // produk di jendela "Pesan"
   const [info, setInfo] = useState(null);   // produk di jendela "Spesifikasi"
@@ -38,11 +22,11 @@ export function CartProvider({ children }) {
   const setItems = useCallback((arr) => {
     const next = (arr || []).map((x) => ({ ...x }));
     setItemsState(next);
-    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    try { localStorage.setItem(CART_KEY, JSON.stringify(next)); } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
-    const on = (e) => { if (e.key === KEY) setItemsState(load()); };
+    const on = (e) => { if (e.key === CART_KEY) setItemsState(loadCart()); };
     window.addEventListener('storage', on);
     return () => window.removeEventListener('storage', on);
   }, []);

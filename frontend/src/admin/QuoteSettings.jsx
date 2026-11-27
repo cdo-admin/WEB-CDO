@@ -1,7 +1,7 @@
 // Form Penawaran: atur produk, ukuran, dan sub pilihan (varian) yang bisa dipesan pengunjung.
 import { useEffect, useState } from 'react';
 import { QUOTE_BASE_OPTIONS, PER_PRODUCT, SPECS, VARIANTS } from '../data/quoteOptions.js';
-import { getConfig, setConfig, useAdminToast, useFail } from './common.jsx';
+import { getConfig, setConfig, useAdminToast, useFail } from './adminLib.js';
 
 const CATS = { gas: 'Produk Gas', service: 'Layanan', equipment: 'Perlengkapan' };
 const lines = (items) => (items || []).map((i) => (typeof i === 'string' ? i : i[0] === i[1] ? i[0] : i[0] + ' | ' + i[1])).join('\n');

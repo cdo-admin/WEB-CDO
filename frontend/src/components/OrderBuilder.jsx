@@ -2,11 +2,13 @@
    Isi tabel = isi keranjang, jadi pesanan dari halaman Produk otomatis muncul di sini. */
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { T, TH } from '../cms/components.jsx';
-import { useI18n } from '../i18n/I18nProvider.jsx';
-import { useCart, SpecOptions } from './Cart.jsx';
-import { useToast } from './Toast.jsx';
+import { useI18n } from '../i18n/i18n.js';
+import { SpecOptions } from './Cart.jsx';
+import { useCart } from './cartContext.js';
+import { useToast } from './toastContext.js';
 import { useQuoteConfig, pair, isCustom, compose, specGroups } from '../data/useQuoteConfig.js';
 import { TEXT } from '../data/quoteOptions.js';
+import { builderReset } from './orderBuilderReset.js';
 
 const PRESETS = [
   ['Oksigen Medis', 'Tabung 6m³', '5', 'gas', 'Produk Gas', '+ 5 Tabung Oksigen Medis 6m³'],
@@ -16,9 +18,6 @@ const PRESETS = [
   ['Gas Piping System', 'Layanan Proyek / Survei', '1', 'service', 'Layanan Servis', '+ Layanan Piping System'],
 ];
 const BADGE = { gas: 'order-badge-gas', service: 'order-badge-service' };
-
-/** Kosongkan isian builder setelah formulir dikirim (dipanggil oleh halaman). */
-export const builderReset = { current: () => {} };
 
 export default function OrderBuilder() {
   const { t } = useI18n();
@@ -42,7 +41,8 @@ export default function OrderBuilder() {
   const curSpec = allSpecs.indexOf(spec) >= 0 ? spec : firstSpec;
   const required = isCustom(curSpec);
 
-  useEffect(() => { if (opt && opt.value !== product) setProduct(opt.value); }, [opt, product]);
+  // produk terpilih tidak ada lagi di opsi -> ikut opsi pertama (disesuaikan saat render)
+  if (opt && opt.value !== product) setProduct(opt.value);
   useEffect(() => { builderReset.current = () => { setProduct('Oksigen Medis'); setVariant(''); setSpec(''); setQty('1'); setNotes(''); setVErr(false); setNErr(false); }; }, []);
 
   const add = (e) => {

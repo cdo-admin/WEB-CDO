@@ -9,26 +9,12 @@
  */
 import { Children, cloneElement, isValidElement } from 'react';
 import { Link } from 'react-router-dom';
-import { useCms, useScope, ScopeProvider, usePageFile } from './CmsProvider.jsx';
-import { useI18n, norm } from '../i18n/I18nProvider.jsx';
+import { useCms, useScope, ScopeProvider, usePageFile } from './cms.js';
+import { useI18n, norm } from '../i18n/i18n.js';
 import { assetUrl, internalRoute } from '../lib/pages.js';
+import { useCmsText } from './useCmsText.js';
 
 const textOf = (children) => Children.toArray(children).map((c) => (typeof c === 'string' || typeof c === 'number' ? c : '')).join('');
-
-/** Teks hasil CMS + terjemahan untuk kunci asli `orig` (dipakai juga oleh komponen lain). */
-export function useCmsText() {
-  const { pick } = useCms();
-  const scope = useScope();
-  const { lang, lookup } = useI18n();
-  return (orig, { translate = true } = {}) => {
-    const key = norm(orig);
-    const ov = pick('text', scope, key);
-    const idText = ov && ov.id != null ? ov.id : key;
-    if (!translate || lang !== 'en') return idText;
-    const en = (ov && ov.en) || lookup(norm(idText));
-    return en != null && String(en).indexOf('<') === -1 ? en : idText;
-  };
-}
 
 export function T({ children }) {
   const { edit } = useCms();

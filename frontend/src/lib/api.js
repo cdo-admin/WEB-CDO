@@ -3,7 +3,7 @@ const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '') + '/api';
 const TOKEN_KEY = 'candiAdminToken';
 
 export const getToken = () => { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; } };
-export const setToken = (t) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } };
+export const setToken = (t) => { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } };
 
 export class ApiError extends Error {
   constructor(message, status, data) { super(message); this.status = status; this.data = data; }

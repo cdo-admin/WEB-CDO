@@ -1,7 +1,7 @@
 // Galeri Gambar: semua gambar bawaan di website (dikumpulkan dari kode halaman saat build), bisa diganti sekaligus.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { assetUrl } from '../lib/pages.js';
-import { upsert, removeContent, listContent, uploadMedia, useAdminToast, useFail } from './common.jsx';
+import { upsert, removeContent, listContent, uploadMedia, useAdminToast, useFail } from './adminLib.js';
 
 const SOURCES = import.meta.glob(['../pages/*.jsx', '../components/Header.jsx', '../components/Footer.jsx'], { query: '?raw', import: 'default', eager: true });
 const FILE_PAGE = { HomePage: 'index.html', AboutPage: 'about.html', ProductsPage: 'products.html', PortfolioPage: 'portfolio.html', GalleryPage: 'gallery.html', CareerPage: 'career.html', ContactPage: 'contact.html', QuotePage: 'quote.html' };
@@ -30,7 +30,7 @@ const pageLabel = (f) => (GL_PAGES.find((x) => x[0] === f) || [f, f])[1];
 
 export default function ImageGallery() {
   const toast = useAdminToast(), fail = useFail();
-  const imgs = useMemo(collectImages, []);
+  const imgs = useMemo(() => collectImages(), []);
   const [ov, setOv] = useState({});
   const [page, setPage] = useState('');
   const [only, setOnly] = useState(false);

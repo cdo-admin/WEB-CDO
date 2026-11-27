@@ -1,5 +1,5 @@
 import { T, CImg, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { useT } from '../i18n/i18n.js';
 import OrderButton from '../components/OrderButton.jsx';
 import ProductTabs from "../components/ProductTabs.jsx";
 

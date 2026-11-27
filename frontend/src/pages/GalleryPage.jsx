@@ -1,5 +1,6 @@
 import { T, CImg } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import ActivityGallery from '../components/ActivityGallery.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export const meta = { page: "gallery.html", title: "Galeri Kegiatan | PT. Candi Oxygen", description: "Galeri kegiatan keluarga besar PT. Candi Oxygen: outing, lomba 17 Agustusan, buka bersama, dan momen kebersamaan lainnya." };
 

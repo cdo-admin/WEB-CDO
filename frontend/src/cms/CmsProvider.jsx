@@ -5,40 +5,12 @@
  *  2. Mode edit visual: halaman dibuka di iframe panel admin dengan ?cms_edit=1.
  *     Klik elemen -> data elemen dikirim ke admin lewat postMessage (protokol sama dengan versi lama).
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import { pageFileOf } from '../lib/pages.js';
-import { useI18n, norm } from '../i18n/I18nProvider.jsx';
+import { CmsCtx, EDIT_MODE, parseRows, useCms, usePageFile } from './cms.js';
+import { useI18n, norm } from '../i18n/i18n.js';
 
 const CACHE_KEY = 'candiCmsCache2';
-const Q = new URLSearchParams(window.location.search);
-const IN_FRAME = window.parent !== window;
-export const EDIT_MODE = Q.get('cms_edit') === '1' && IN_FRAME;
-
-function emptyModel() { return { text: {}, img: {}, href: {}, hide: {}, clones: [], config: {}, scoped: {} }; }
-export function parseRows(rows) {
-  const m = emptyModel();
-  (rows || []).forEach((r) => {
-    const s = r.scope || '';
-    if (r.kind === 'clone') { m.clones.push(r); return; }
-    if (r.kind === 'config') { try { m.config[r.key] = JSON.parse(r.value_id); } catch { /* ignore */ } return; }
-    if (r.kind === 'hide') { m.hide[r.key] = true; return; }
-    if (r.kind !== 'text' && r.kind !== 'img' && r.kind !== 'href') return;
-    let tgt = m;
-    if (s) { m.scoped[s] = m.scoped[s] || { text: {}, img: {}, href: {} }; tgt = m.scoped[s]; }
-    tgt[r.kind][r.key] = { id: r.value_id, en: r.value_en };
-  });
-  m.clones.sort((a, b) => (a.position || 0) - (b.position || 0));
-  return m;
-}
-
-const CmsCtx = createContext(null);
-const ScopeCtx = createContext('');
-export const ScopeProvider = ScopeCtx.Provider;
-export const useScope = () => useContext(ScopeCtx);
-export const useCms = () => useContext(CmsCtx);
-export function usePageFile() { return pageFileOf(useLocation().pathname); }
 
 function readCache() { try { return localStorage.getItem(CACHE_KEY) || ''; } catch { return ''; } }
 
@@ -91,7 +63,7 @@ function EditBridge() {
   const { lookup } = useI18n();
   const page = usePageFile();
   const st = useRef({ model, pick, lookup, page });
-  st.current = { model, pick, lookup, page };
+  useLayoutEffect(() => { st.current = { model, pick, lookup, page }; });
 
   useEffect(() => {
     document.documentElement.classList.add('cms-editing');

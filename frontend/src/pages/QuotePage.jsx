@@ -1,8 +1,8 @@
 import OrderBuilder from '../components/OrderBuilder.jsx';
 import { useQuoteSubmit } from '../components/useQuoteSubmit.js';
 import PhoneInput from '../components/PhoneInput.jsx';
-import { T, TH, CImg, CLink, Card } from '../cms/components.jsx';
-import { useT } from '../i18n/I18nProvider.jsx';
+import { T, CImg, CLink, Card } from '../cms/components.jsx';
+import { useT } from '../i18n/i18n.js';
 
 export const meta = { page: "quote.html", title: "Ajukan Penawaran Resmi (RFQ) | PT. Candi Oxygen", description: "Formulir resmi permohonan penawaran harga (RFQ) pasokan gas industri, gas medis, layanan servis, dan perlengkapan gas PT. Candi Oxygen sejak 1980 dengan sistem Dynamic Order Table." };
 

@@ -3,8 +3,8 @@ import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import { usePageFile } from './cms/CmsProvider.jsx';
-import { useI18n } from './i18n/I18nProvider.jsx';
+import { usePageFile } from './cms/cms.js';
+import { useI18n } from './i18n/i18n.js';
 import { trackPageView } from './lib/tracker.js';
 import { usePageEffects } from './hooks/usePageEffects.js';
 

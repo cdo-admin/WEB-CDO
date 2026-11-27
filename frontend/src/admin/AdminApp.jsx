@@ -59,7 +59,8 @@ export default function AdminApp() {
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(!!getToken());
   const [tab, setTab] = useState(() => (window.location.hash || '').slice(1) || 'dashboard');
-  const [opened, setOpened] = useState({});
+  const [opened, setOpened] = useState(() => ({ [tab]: true }));
+  if (!opened[tab]) setOpened((o) => ({ ...o, [tab]: true })); // tab yang pernah dibuka tetap terpasang
   const [badge, setBadge] = useState(0);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function AdminApp() {
     return () => m.remove();
   }, []);
   useEffect(() => { if (user) { try { localStorage.setItem('candiNoTrack', '1'); } catch { /* ignore */ } } }, [user]);
-  useEffect(() => { setOpened((o) => ({ ...o, [tab]: true })); window.history.replaceState(null, '', '#' + tab); }, [tab]);
+  useEffect(() => { window.history.replaceState(null, '', '#' + tab); }, [tab]);
 
   const refreshBadge = useCallback(() => {
     adminApi('/inbox/unread').then((r) => setBadge(Object.values(r || {}).reduce((a, b) => a + b, 0)), () => {});
