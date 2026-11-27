@@ -12,6 +12,17 @@ npm run dev        # http://localhost:5173 — /api & /storage diteruskan ke Lar
 
 Jalankan juga backend: `cd ../backend && php artisan serve`.
 
+## Test
+
+```bash
+npm test           # sekali jalan (Vitest + Testing Library, jsdom)
+npm run test:watch # mode pantau saat mengembangkan
+npm run lint       # oxlint
+```
+
+Test ada di samping kodenya (`*.test.jsx`); helper bersama di `src/test/` (`renderSite` = provider situs publik,
+`mockApi` = mock `fetch` ke API Laravel). Setiap perbaikan bug wajib disertai test regresi yang gagal sebelum perbaikan.
+
 ## Build
 
 | Perintah | Hasil |

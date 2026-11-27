@@ -6,6 +6,7 @@
     "react/only-export-components": ["warn", { "allowConstantExport": true, "allowExportNames": ["meta"] }]
   },
   "overrides": [
-    { "files": ["src/main.jsx"], "rules": { "react/only-export-components": "off" } }
+    { "files": ["src/main.jsx"], "rules": { "react/only-export-components": "off" } },
+    { "files": ["src/test/**", "src/**/*.test.{js,jsx}"], "rules": { "react/only-export-components": "off" } }
   ]
 }
