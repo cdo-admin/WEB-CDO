@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { assetUrl } from '../lib/pages.js';
 import { upsert, removeContent, listContent, uploadMedia, useAdminToast, useFail } from './adminLib.js';
 
-const SOURCES = import.meta.glob(['../pages/*.jsx', '../components/Header.jsx', '../components/Footer.jsx'], { query: '?raw', import: 'default', eager: true });
+const SOURCES = import.meta.glob(['../pages/*.jsx', '!../pages/*.test.jsx', '../components/Header.jsx', '../components/Footer.jsx'], { query: '?raw', import: 'default', eager: true });
 const FILE_PAGE = { HomePage: 'index.html', AboutPage: 'about.html', ProductsPage: 'products.html', PortfolioPage: 'portfolio.html', GalleryPage: 'gallery.html', CareerPage: 'career.html', ContactPage: 'contact.html', QuotePage: 'quote.html' };
 const GL_PAGES = [['index.html', 'Beranda'], ['about.html', 'Tentang Kami'], ['products.html', 'Produk & Layanan'], ['portfolio.html', 'Portofolio'], ['gallery.html', 'Galeri Kegiatan'], ['career.html', 'Karir'], ['contact.html', 'Kontak'], ['quote.html', 'Penawaran']];
 
